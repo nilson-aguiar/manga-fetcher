@@ -57,7 +57,7 @@ class CLIIntegrationIT {
                 val chapter = chapters.last()
                 val expectedName = ChapterNamingUtils.getFileName(chapter.number, chapter.volume)
                 val expectedFile = tempDir.resolve(expectedName)
-                
+
                 assertTrue(expectedFile.exists(), "Expected .cbz file should exist at ${expectedFile.absolutePath}")
                 assertTrue(expectedFile.length() > 0, "Expected .cbz file should not be empty")
             } finally {

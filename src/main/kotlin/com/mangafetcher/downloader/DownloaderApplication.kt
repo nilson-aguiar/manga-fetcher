@@ -122,7 +122,7 @@ class DownloadCommand(
 
                     val finalName = ChapterNamingUtils.getFileName(cNum, volume)
                     val outputFile = java.io.File(outputDir, finalName)
-                    
+
                     println("Converting to ${outputFile.absolutePath}...")
                     converter.convert(images, outputFile)
                     println("Successfully downloaded and converted to ${outputFile.name}")

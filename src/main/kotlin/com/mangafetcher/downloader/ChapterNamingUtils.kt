@@ -3,15 +3,17 @@ package com.mangafetcher.downloader
 import java.io.File
 
 object ChapterNamingUtils {
-    fun getChapterLabel(chapterNumber: String): String {
-        return if (chapterNumber.startsWith("Capítulo ")) {
+    fun getChapterLabel(chapterNumber: String): String =
+        if (chapterNumber.startsWith("Capítulo ")) {
             chapterNumber.substringAfter("Capítulo ")
         } else {
             chapterNumber
         }
-    }
 
-    fun getFileName(chapterNumber: String, volume: String? = null): String {
+    fun getFileName(
+        chapterNumber: String,
+        volume: String? = null,
+    ): String {
         val label = getChapterLabel(chapterNumber)
         return if (volume != null) {
             "$volume Ch. $label.cbz"
