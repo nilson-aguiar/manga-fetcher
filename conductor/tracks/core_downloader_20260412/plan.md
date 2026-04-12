@@ -24,7 +24,7 @@ Develop the logic to search for manga and fetch chapter data from MangaLivre.
 - [x] **Task: Implement Chapter Fetching** (bf1e137)
     - [ ] Write tests for fetching chapter URLs for a given manga.
     - [ ] Implement `MangaLivreScraper.fetchChapters(mangaId)`.
-- [ ] **Task: Implement Image Downloading**
+- [x] **Task: Implement Image Downloading** (5442d3b)
     - [ ] Write tests for downloading images from a chapter page.
     - [ ] Implement `MangaLivreScraper.downloadImages(chapterId)`.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
