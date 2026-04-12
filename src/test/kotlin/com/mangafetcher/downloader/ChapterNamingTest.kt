@@ -16,13 +16,19 @@ class ChapterNamingTest {
     @Test
     fun `should extract chapter label`() {
         assertEquals("200", ChapterNamingUtils.getChapterLabel("Capítulo 200"))
+        assertEquals("200", ChapterNamingUtils.getChapterLabel("Capitulo 200"))
+        assertEquals("200", ChapterNamingUtils.getChapterLabel("Chapter 200"))
         assertEquals("200", ChapterNamingUtils.getChapterLabel("200"))
+        assertEquals("1", ChapterNamingUtils.getChapterLabel("01"))
+        assertEquals("0", ChapterNamingUtils.getChapterLabel("00"))
+        assertEquals("0.5", ChapterNamingUtils.getChapterLabel("00.5"))
     }
 
     @Test
     fun `should format file name`() {
         assertEquals("Ch. 200.cbz", ChapterNamingUtils.getFileName("200"))
         assertEquals("Vol. 34 Ch. 200.cbz", ChapterNamingUtils.getFileName("200", "Vol. 34"))
+        assertEquals("Ch. 1.cbz", ChapterNamingUtils.getFileName("01"))
     }
 
     @Test
@@ -82,6 +88,6 @@ class ChapterNamingTest {
         val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "solo-leveling", "capitulo-00", "00", null)
         assertTrue(renamed, "Should rename old format to new format")
         assertFalse(File(tempDir, "solo-leveling-capitulo-00.cbz").exists())
-        assertTrue(File(tempDir, "Ch. 00.cbz").exists())
+        assertTrue(File(tempDir, "Ch. 0.cbz").exists())
     }
 }

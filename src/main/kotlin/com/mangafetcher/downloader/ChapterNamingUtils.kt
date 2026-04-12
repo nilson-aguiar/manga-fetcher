@@ -3,12 +3,27 @@ package com.mangafetcher.downloader
 import java.io.File
 
 object ChapterNamingUtils {
-    fun getChapterLabel(chapterNumber: String): String =
-        if (chapterNumber.startsWith("Capítulo ")) {
-            chapterNumber.substringAfter("Capítulo ")
-        } else {
-            chapterNumber
+    fun getChapterLabel(chapterNumber: String): String {
+        val prefixes = listOf("Capítulo ", "Capitulo ", "Chapter ", "Cap. ", "Ch. ")
+        var label = chapterNumber
+        for (prefix in prefixes) {
+            if (label.startsWith(prefix, ignoreCase = true)) {
+                label = label.substring(prefix.length).trim()
+                break
+            }
         }
+        
+        // Remove leading zeros if it's a numeric string (e.g., "01" -> "1", "00" -> "0")
+        // But keep "0.5" as is.
+        if (label.matches("""0\d+.*""".toRegex())) {
+            val num = label.toDoubleOrNull()
+            if (num != null) {
+                return if (num % 1.0 == 0.0) num.toInt().toString() else num.toString()
+            }
+        }
+        
+        return label
+    }
 
     fun getFileName(
         chapterNumber: String,
