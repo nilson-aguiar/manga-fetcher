@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 class CIConfigurationTest {
-
     @Test
     fun `github actions workflow file exists`() {
         val workflowFile = File(".github/workflows/build-and-push.yml")
@@ -20,23 +19,30 @@ class CIConfigurationTest {
     }
 
     @Test
-    fun `workflow contains nativeCompile`() {
-        val workflowFile = File(".github/workflows/build-and-push.yml")
-        val content = workflowFile.readText()
-        assertTrue(content.contains("./gradlew nativeCompile"), "Workflow should contain './gradlew nativeCompile'")
-    }
-
-    @Test
     fun `dockerfile exists`() {
         val dockerfile = File("Dockerfile")
         assertTrue(dockerfile.exists(), "Dockerfile should exist")
     }
 
     @Test
-    fun `workflow contains buildx and build-push actions`() {
+    fun `workflow references both Dockerfiles`() {
         val workflowFile = File(".github/workflows/build-and-push.yml")
         val content = workflowFile.readText()
-        assertTrue(content.contains("docker/setup-buildx-action"), "Workflow should contain 'docker/setup-buildx-action'")
-        assertTrue(content.contains("docker/build-push-action"), "Workflow should contain 'docker/build-push-action'")
+        assertTrue(content.contains("file: Dockerfile"), "Workflow should build from Dockerfile")
+        assertTrue(content.contains("file: Dockerfile-native"), "Workflow should build from Dockerfile-native")
+    }
+
+    @Test
+    fun `native dockerfile exists`() {
+        val dockerfile = File("Dockerfile-native")
+        assertTrue(dockerfile.exists(), "Dockerfile-native should exist")
+    }
+
+    @Test
+    fun `workflow contains ghcr login`() {
+        val workflowFile = File(".github/workflows/build-and-push.yml")
+        val content = workflowFile.readText()
+        assertTrue(content.contains("ghcr.io"), "Workflow should contain login for 'ghcr.io'")
+        assertTrue(content.contains("GITHUB_TOKEN"), "Workflow should use 'GITHUB_TOKEN' for authentication")
     }
 }
