@@ -25,13 +25,13 @@
     - [ ] Implement the build step for both `Dockerfile` and `Dockerfile-native`.
 - [x] **Task: Conductor - User Manual Verification 'Phase 3: Dockerization & Multi-arch Support' (Protocol in workflow.md)** f510a8d
 
-## Phase 4: GHCR Push and Release Tags
+## Phase 4: GHCR Push and Release Tags [checkpoint: cd8d663]
 - [x] **Task: Implement Registry Authentication** 04ad0b1
     - [ ] Add login step for GHCR using `GITHUB_TOKEN`.
 - [x] **Task: Implement Image Tagging & Push** bc63393
     - [ ] Configure `docker/metadata-action` for dynamic tagging (commit SHA, branch, tags).
     - [ ] Update build step to push images on `main` branch or tag creation.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 4: GHCR Push and Release Tags' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 4: GHCR Push and Release Tags' (Protocol in workflow.md)** cd8d663
 
 ## Phase 5: Final Validation
 - [ ] **Task: Verify Docker Image Execution**
