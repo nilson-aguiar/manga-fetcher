@@ -25,9 +25,9 @@ The goal is to refactor the `download` command to use a `-c` flag for specifying
     - [x] Implement mutual exclusivity check between `chapterNumber` and `fromChapter`.
 - [x] Task: Verify all tests pass (TDD: Green Phase). 88c291c
 
-### Phase 3: Finalization
-- [ ] Task: Update the `workflow.md` examples and `README.md` (if any) to reflect the command changes.
-- [ ] Task: Conductor - User Manual Verification 'Refactor Download Command' (Protocol in workflow.md).
+### Phase 3: Finalization [checkpoint: 29ce7c9]
+- [x] Task: Update the `workflow.md` examples and `README.md` (if any) to reflect the command changes. 2a78482
+- [x] Task: Conductor - User Manual Verification 'Refactor Download Command' (Protocol in workflow.md). 29ce7c9
 
 ## Verification & Testing
 - Run all unit tests: `./gradlew test`
