@@ -20,18 +20,31 @@ class DownloaderApplication : Callable<Int> {
 }
 
 @Command(name = "search", description = ["Search for manga by title"])
-class SearchCommand : Callable<Int> {
+class SearchCommand(
+    private val scraper: MangaLivreScraper = MangaLivreScraper()
+) : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["Title to search for"])
     lateinit var title: String
 
     override fun call(): Int {
-        println("Searching for: $title")
+        scraper.use { s ->
+            val results = s.search(title)
+            if (results.isEmpty()) {
+                println("No results found for '$title'")
+                return 0
+            }
+            println("Search results for '$title':")
+            results.forEach { println("- ${it.title} (ID: ${it.id})") }
+        }
         return 0
     }
 }
 
 @Command(name = "download", description = ["Download a specific chapter of a manga"])
-class DownloadCommand : Callable<Int> {
+class DownloadCommand(
+    private val scraper: MangaLivreScraper = MangaLivreScraper(),
+    private val converter: CbzConverter = CbzConverter()
+) : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["Manga ID"])
     lateinit var mangaId: String
 
@@ -42,7 +55,26 @@ class DownloadCommand : Callable<Int> {
     lateinit var output: String
 
     override fun call(): Int {
-        println("Downloading $mangaId chapter $chapterId to $output")
+        val outputDir = java.io.File(output)
+        val tempDir = java.nio.file.Files.createTempDirectory("manga-fetcher-download").toFile()
+        
+        try {
+            scraper.use { s ->
+                println("Downloading images for $mangaId chapter $chapterId...")
+                val images = s.downloadImages(mangaId, chapterId, tempDir)
+                if (images.isEmpty()) {
+                    println("Error: No images found or failed to download.")
+                    return 1
+                }
+                
+                val outputFile = java.io.File(outputDir, "$mangaId-$chapterId.cbz")
+                println("Converting to ${outputFile.absolutePath}...")
+                converter.convert(images, outputFile)
+                println("Successfully downloaded and converted to ${outputFile.name}")
+            }
+        } finally {
+            tempDir.deleteRecursively()
+        }
         return 0
     }
 }
