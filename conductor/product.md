@@ -18,6 +18,8 @@ A high-performance CLI application designed for manga readers, collectors, and p
 
 ## Core Features
 - **Chapter Selection:** Search and select specific chapters for download.
+- **Chapter Range Selection:** Support for downloading all chapters starting from a specific one.
 - **Multiple Sources Support:** A pluggable architecture to support various manga sites, starting with **MangaLivre** as the initial source.
 - **Metadata Tagging:** Enriching downloaded files with relevant manga metadata.
+- **Volume Auto-Rename:** Automatically rename files to include volume information when it becomes available.
 - **CLI Native:** Fast startup and minimal overhead via GraalVM native images.

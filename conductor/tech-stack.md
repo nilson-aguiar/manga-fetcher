@@ -12,6 +12,9 @@
 - **Playwright:** A modern browser automation library for handling JavaScript-heavy sites and bypassing anti-bot protections.
 - **Jsoup:** Still used for parsing HTML content when static snapshots are sufficient.
 
+## Testing & Coverage
+- **Jacoco:** For measuring and reporting test code coverage.
+
 ### Design Deviations
 - **2026-04-12:** Switched from OkHttp to Playwright for the scrapper to ensure better reliability with JS-rendered content and sites using anti-bot protections like Cloudflare, which are common in the manga ecosystem. While this increases overhead and complicates GraalVM native image support, it's a necessary trade-off for core functionality.
 
