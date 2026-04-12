@@ -3,7 +3,7 @@
 ## Phase 1: Project Scaffolding and Core Utilities
 Initialize the Kotlin/Gradle project and implement basic utility classes for network requests and file management.
 
-- [ ] **Task: Setup Gradle Project**
+- [x] **Task: Setup Gradle Project** (b51120c)
     - [ ] Initialize a new Gradle project with Kotlin DSL.
     - [ ] Configure dependencies (Picocli, OkHttp, Kotlin-Stdlib, JUnit).
     - [ ] Set up the basic project structure (src/main/kotlin, src/test/kotlin).
