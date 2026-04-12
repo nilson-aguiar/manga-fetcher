@@ -34,6 +34,6 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 4: GHCR Push and Release Tags' (Protocol in workflow.md)** cd8d663
 
 ## Phase 5: Final Validation
-- [ ] **Task: Verify Docker Image Execution**
+- [x] **Task: Verify Docker Image Execution** [manual]
     - [ ] Add a post-build step or manual verification to run the built container and check the CLI output.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 5: Final Validation' (Protocol in workflow.md)**
