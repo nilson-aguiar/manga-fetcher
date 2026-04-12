@@ -18,4 +18,11 @@ class CIConfigurationTest {
         val content = workflowFile.readText()
         assertTrue(content.contains("./gradlew check"), "Workflow should contain './gradlew check'")
     }
+
+    @Test
+    fun `workflow contains nativeCompile`() {
+        val workflowFile = File(".github/workflows/build-and-push.yml")
+        val content = workflowFile.readText()
+        assertTrue(content.contains("./gradlew nativeCompile"), "Workflow should contain './gradlew nativeCompile'")
+    }
 }

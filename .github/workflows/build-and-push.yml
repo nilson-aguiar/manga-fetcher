@@ -30,3 +30,12 @@ jobs:
 
     - name: Build and Test with Gradle
       run: ./gradlew check
+
+    - name: Build Native Image
+      run: ./gradlew nativeCompile
+
+    - name: Upload Native Binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: manga-fetcher-linux
+        path: build/native/nativeCompile/manga-fetcher
