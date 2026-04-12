@@ -20,7 +20,7 @@
 - [x] **Task: Create Dockerfile** 43a1e72
     - [ ] Write a multi-stage Dockerfile that uses the native binary.
     - [ ] Ensure the final image is minimal (e.g., using `distroless` or `alpine`).
-- [ ] **Task: Configure Multi-arch Build with Buildx**
+- [x] **Task: Configure Multi-arch Build with Buildx** ba7a62a
     - [ ] Add `docker/setup-qemu-action` and `docker/setup-buildx-action` to the workflow.
     - [ ] Implement the build step for `linux/amd64` and `linux/arm64`.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 3: Dockerization & Multi-arch Support' (Protocol in workflow.md)**
