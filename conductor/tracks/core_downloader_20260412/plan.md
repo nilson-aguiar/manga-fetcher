@@ -7,7 +7,7 @@ Initialize the Kotlin/Gradle project and implement basic utility classes for net
     - [ ] Initialize a new Gradle project with Kotlin DSL.
     - [ ] Configure dependencies (Picocli, OkHttp, Kotlin-Stdlib, JUnit).
     - [ ] Set up the basic project structure (src/main/kotlin, src/test/kotlin).
-- [ ] **Task: Implement Core HTTP Client**
+- [x] **Task: Implement Core HTTP Client** (426105a)
     - [ ] Write tests for a simple HTTP client wrapper using OkHttp.
     - [ ] Implement the HTTP client with basic retry logic and rate limiting.
 - [ ] **Task: Implement CBZ Conversion Utility**
