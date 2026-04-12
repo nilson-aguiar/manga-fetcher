@@ -54,7 +54,10 @@ class CLIIntegrationIT {
                 assertTrue(downloadResult == 0, "Download should return 0 exit code")
                 assertTrue(outputAfterDownload.contains("Successfully downloaded"), "Download output should contain success message")
 
-                val expectedFile = tempDir.resolve("solo-leveling-$firstChapterId.cbz")
+                val chapter = chapters.last()
+                val expectedName = ChapterNamingUtils.getFileName(chapter.number, chapter.volume)
+                val expectedFile = tempDir.resolve(expectedName)
+                
                 assertTrue(expectedFile.exists(), "Expected .cbz file should exist at ${expectedFile.absolutePath}")
                 assertTrue(expectedFile.length() > 0, "Expected .cbz file should not be empty")
             } finally {
