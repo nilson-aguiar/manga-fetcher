@@ -45,4 +45,12 @@ class CIConfigurationTest {
         assertTrue(content.contains("ghcr.io"), "Workflow should contain login for 'ghcr.io'")
         assertTrue(content.contains("GITHUB_TOKEN"), "Workflow should use 'GITHUB_TOKEN' for authentication")
     }
+
+    @Test
+    fun `workflow contains metadata and push configuration`() {
+        val workflowFile = File(".github/workflows/build-and-push.yml")
+        val content = workflowFile.readText()
+        assertTrue(content.contains("docker/metadata-action"), "Workflow should contain 'docker/metadata-action'")
+        assertTrue(content.contains("push: \${{ github.event_name != 'pull_request' }}"), "Workflow should push only on non-PR events")
+    }
 }

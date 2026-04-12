@@ -45,14 +45,39 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Docker Metadata (Standard)
+      id: meta-std
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=sha,format=short
+
+    - name: Docker Metadata (Native)
+      id: meta-native
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}
+        flavor: |
+          suffix=-native
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=sha,format=short
+
     - name: Build Standard Docker Image
       uses: docker/build-push-action@v6
       with:
         context: .
         file: Dockerfile
         platforms: linux/amd64,linux/arm64
-        push: false
-        tags: manga-fetcher:latest
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta-std.outputs.tags }}
+        labels: ${{ steps.meta-std.outputs.labels }}
 
     - name: Build Native Docker Image (Experimental)
       uses: docker/build-push-action@v6
@@ -60,5 +85,6 @@ jobs:
         context: .
         file: Dockerfile-native
         platforms: linux/amd64,linux/arm64
-        push: false
-        tags: manga-fetcher:native-latest
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta-native.outputs.tags }}
+        labels: ${{ steps.meta-native.outputs.labels }}
