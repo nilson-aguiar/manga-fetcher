@@ -33,7 +33,7 @@
     - [ ] Update build step to push images on `main` branch or tag creation.
 - [x] **Task: Conductor - User Manual Verification 'Phase 4: GHCR Push and Release Tags' (Protocol in workflow.md)** cd8d663
 
-## Phase 5: Final Validation
+## Phase 5: Final Validation [checkpoint: 71d80cb]
 - [x] **Task: Verify Docker Image Execution** [manual]
     - [ ] Add a post-build step or manual verification to run the built container and check the CLI output.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 5: Final Validation' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 5: Final Validation' (Protocol in workflow.md)** 71d80cb
