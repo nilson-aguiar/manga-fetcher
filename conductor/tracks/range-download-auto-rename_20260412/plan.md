@@ -16,7 +16,7 @@ Implement a range-based download option for the Manga Fetcher CLI and add automa
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Range Download Logic & Output Management
-- [ ] Task: Implement range selection and output directory in `DownloadCommand`.
+- [x] Task: Implement range selection and output directory in `DownloadCommand`. [11fd05e]
     - [ ] Update `DownloadCommand` to include `--from <chapter>` and `--output-dir <path>` options.
     - [ ] Implement logic to fetch all chapters and filter those `>=` specified chapter.
     - [ ] Write unit tests for the filtering logic in `DownloadCommand`.
