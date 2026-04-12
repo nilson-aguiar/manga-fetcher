@@ -33,10 +33,10 @@ Combine the scrapper and conversion logic into a cohesive CLI application.
 - [x] **Task: Implement Core CLI Commands** (82d33ff)
     - [ ] Write tests for Picocli command parsing.
     - [ ] Implement `search` and `download` commands.
-- [~] **Task: Integrate Scrapper with Converter**
+- [x] **Task: Integrate Scrapper with Converter** (add4c61)
     - [ ] Write tests for the full search-download-convert flow.
     - [ ] Implement the integration logic in the CLI commands.
-- [ ] **Task: GraalVM Native Image Configuration**
+- [~] **Task: GraalVM Native Image Configuration**
     - [ ] Add the GraalVM Gradle plugin.
     - [ ] Configure reflections and other native image settings.
     - [ ] Verify the native image build process.
