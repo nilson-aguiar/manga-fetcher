@@ -23,7 +23,7 @@ Implement a range-based download option for the Manga Fetcher CLI and add automa
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: File Existence & Renaming Logic
-- [x] Task: Implement file existence check and auto-renaming. [8e318c5]
+- [x] Task: Implement file existence check and auto-renaming. [ae4d5aa]
     - [ ] Create a utility or internal function to check if a chapter file already exists in both `Ch. X.cbz` and `Vol. Y Ch. X.cbz` formats.
     - [ ] Implement logic to rename existing `Ch. X.cbz` files to `Vol. Y Ch. X.cbz` when volume information is available.
     - [ ] Write unit tests for naming logic and renaming operations.
