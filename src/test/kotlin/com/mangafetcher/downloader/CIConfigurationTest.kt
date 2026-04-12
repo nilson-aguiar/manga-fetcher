@@ -25,4 +25,10 @@ class CIConfigurationTest {
         val content = workflowFile.readText()
         assertTrue(content.contains("./gradlew nativeCompile"), "Workflow should contain './gradlew nativeCompile'")
     }
+
+    @Test
+    fun `dockerfile exists`() {
+        val dockerfile = File("Dockerfile")
+        assertTrue(dockerfile.exists(), "Dockerfile should exist")
+    }
 }
