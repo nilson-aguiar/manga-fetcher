@@ -10,7 +10,7 @@ Initialize the Kotlin/Gradle project and implement basic utility classes for net
 - [x] **Task: Implement Core HTTP Client** (426105a)
     - [ ] Write tests for a simple HTTP client wrapper using OkHttp.
     - [ ] Implement the HTTP client with basic retry logic and rate limiting.
-- [ ] **Task: Implement CBZ Conversion Utility**
+- [x] **Task: Implement CBZ Conversion Utility** (0d859ef)
     - [ ] Write tests for zipping a list of images into a .cbz file.
     - [ ] Implement the `CbzConverter` using standard JVM zip libraries.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
