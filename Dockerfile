@@ -1,5 +1,5 @@
 # Stage 1: Build native image
-FROM ghcr.io/graalvm/native-image-community:21 AS builder
+FROM ghcr.io/graalvm/native-image-community:25 AS builder
 
 # Install Gradle dependencies
 WORKDIR /build
