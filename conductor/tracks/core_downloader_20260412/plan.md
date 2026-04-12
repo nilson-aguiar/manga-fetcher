@@ -18,7 +18,7 @@ Initialize the Kotlin/Gradle project and implement basic utility classes for net
 ## Phase 2: MangaLivre Scrapper Implementation
 Develop the logic to search for manga and fetch chapter data from MangaLivre.
 
-- [ ] **Task: Implement MangaLivre Search**
+- [x] **Task: Implement MangaLivre Search** (7b27328)
     - [ ] Write tests for searching manga on MangaLivre.
     - [ ] Implement `MangaLivreScraper.search(title)` to return a list of manga results.
 - [ ] **Task: Implement Chapter Fetching**
