@@ -16,17 +16,15 @@ Initialize the Kotlin/Gradle project and implement basic utility classes for net
 - [x] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
 
 ## Phase 2: MangaLivre Scrapper Implementation
-Develop the logic to search for manga and fetch chapter data from MangaLivre.
+Develop the logic to search for manga and fetch chapter data from MangaLivre, utilizing Playwright for robust fetching.
 
-- [x] **Task: Implement MangaLivre Search** (7b27328)
-    - [ ] Write tests for searching manga on MangaLivre.
-    - [ ] Implement `MangaLivreScraper.search(title)` to return a list of manga results.
-- [x] **Task: Implement Chapter Fetching** (bf1e137)
-    - [ ] Write tests for fetching chapter URLs for a given manga.
-    - [ ] Implement `MangaLivreScraper.fetchChapters(mangaId)`.
-- [x] **Task: Implement Image Downloading** (5442d3b)
-    - [ ] Write tests for downloading images from a chapter page.
-    - [ ] Implement `MangaLivreScraper.downloadImages(chapterId)`.
+- [x] **Task: Implement MangaLivre Search (Refactor to Playwright)** (d2f737f)
+    - [ ] Update `MangaLivreScraper.search` to use Playwright.
+    - [ ] Ensure tests pass with new stack.
+- [x] **Task: Implement Chapter Fetching (Refactor to Playwright)** (d2f737f)
+    - [ ] Update `MangaLivreScraper.fetchChapters` to use Playwright.
+- [x] **Task: Implement Image Downloading (Refactor to Playwright)** (d2f737f)
+    - [ ] Update `MangaLivreScraper.downloadImages` to use Playwright for reliable image extraction.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
 
 ## Phase 3: CLI Interface and Integration
