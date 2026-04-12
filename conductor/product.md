@@ -15,6 +15,7 @@ A high-performance CLI application designed for manga readers, collectors, and p
 - **Reliability:** Consistent downloads from multiple sources.
 - **CBZ Conversion:** Efficient image-to-.cbz conversion.
 - **Performance:** Optimized execution via Kotlin and GraalVM.
+- **Portability:** Containerized distribution via Docker for multi-architecture support.
 
 ## Core Features
 - **Chapter Selection:** Search and select specific chapters for download.
@@ -23,3 +24,4 @@ A high-performance CLI application designed for manga readers, collectors, and p
 - **Metadata Tagging:** Enriching downloaded files with relevant manga metadata.
 - **Volume Auto-Rename:** Automatically rename files to include volume information when it becomes available.
 - **CLI Native:** Fast startup and minimal overhead via GraalVM native images.
+- **Docker Distribution:** Official multi-arch Docker images (linux/amd64, linux/arm64) for both standard JVM and experimental native environments.
