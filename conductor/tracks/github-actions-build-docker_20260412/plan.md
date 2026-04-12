@@ -1,7 +1,7 @@
 # Implementation Plan: GH Actions Build & Docker Image Generation
 
 ## Phase 1: CI Workflow Foundation
-- [ ] **Task: Setup GitHub Actions YAML structure**
+- [x] **Task: Setup GitHub Actions YAML structure** b00350d
     - [ ] Create `.github/workflows/build-and-push.yml` with basic triggers.
     - [ ] Configure `setup-java` (GraalVM distribution).
     - [ ] Implement Gradle caching for faster builds.
