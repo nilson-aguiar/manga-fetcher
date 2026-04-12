@@ -1,6 +1,6 @@
 # Implementation Plan: GH Actions Build & Docker Image Generation
 
-## Phase 1: CI Workflow Foundation
+## Phase 1: CI Workflow Foundation [checkpoint: 400ac62]
 - [x] **Task: Setup GitHub Actions YAML structure** b00350d
     - [ ] Create `.github/workflows/build-and-push.yml` with basic triggers.
     - [ ] Configure `setup-java` (GraalVM distribution).
@@ -8,7 +8,7 @@
 - [x] **Task: Implement Test Execution in CI** 119e908
     - [ ] Add step to run `./gradlew check` (tests and quality gates).
     - [ ] Handle Playwright dependencies (e.g., `playwright install`).
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1: CI Workflow Foundation' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 1: CI Workflow Foundation' (Protocol in workflow.md)** 400ac62
 
 ## Phase 2: GraalVM Native Image Build
 - [ ] **Task: Configure GraalVM Native Image Compilation**
