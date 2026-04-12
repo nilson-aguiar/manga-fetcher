@@ -28,7 +28,7 @@
 ## Phase 4: GHCR Push and Release Tags
 - [x] **Task: Implement Registry Authentication** 04ad0b1
     - [ ] Add login step for GHCR using `GITHUB_TOKEN`.
-- [ ] **Task: Implement Image Tagging & Push**
+- [x] **Task: Implement Image Tagging & Push** bc63393
     - [ ] Configure `docker/metadata-action` for dynamic tagging (commit SHA, branch, tags).
     - [ ] Update build step to push images on `main` branch or tag creation.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 4: GHCR Push and Release Tags' (Protocol in workflow.md)**
