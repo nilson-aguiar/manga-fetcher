@@ -34,6 +34,21 @@ class DownloaderApplicationTest {
         val help = sw.toString()
 
         assertTrue(help.contains("Usage: manga-fetcher download"))
-        assertTrue(help.contains("Download a specific chapter of a manga"))
+        assertTrue(help.contains("Download chapters of a manga"))
+    }
+
+    @Test
+    fun `download command should have from and output-dir options`() {
+        val app = DownloaderApplication()
+        val cmd = CommandLine(app)
+        val sw = StringWriter()
+        cmd.out = PrintWriter(sw)
+        cmd.err = PrintWriter(sw)
+
+        cmd.execute("download", "--help")
+        val help = sw.toString()
+
+        assertTrue(help.contains("--from"), "Should have --from option")
+        assertTrue(help.contains("--output-dir"), "Should have --output-dir option")
     }
 }
