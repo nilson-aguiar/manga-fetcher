@@ -11,4 +11,11 @@ class CIConfigurationTest {
         val workflowFile = File(".github/workflows/build-and-push.yml")
         assertTrue(workflowFile.exists(), "Workflow file should exist at ${workflowFile.absolutePath}")
     }
+
+    @Test
+    fun `workflow contains gradlew check`() {
+        val workflowFile = File(".github/workflows/build-and-push.yml")
+        val content = workflowFile.readText()
+        assertTrue(content.contains("./gradlew check"), "Workflow should contain './gradlew check'")
+    }
 }
