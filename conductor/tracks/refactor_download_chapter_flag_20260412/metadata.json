@@ -1,8 +1,0 @@
-{
-  "track_id": "refactor_download_chapter_flag_20260412",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-04-12T12:00:00Z",
-  "updated_at": "2026-04-12T12:00:00Z",
-  "description": "replace the option to download a single chapter to: download <manga-id> -c <chapter-number>"
-}
