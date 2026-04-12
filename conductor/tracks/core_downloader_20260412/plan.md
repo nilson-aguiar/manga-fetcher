@@ -15,7 +15,7 @@ Initialize the Kotlin/Gradle project and implement basic utility classes for net
     - [ ] Implement the `CbzConverter` using standard JVM zip libraries.
 - [x] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
 
-## Phase 2: MangaLivre Scrapper Implementation
+## Phase 2: MangaLivre Scrapper Implementation [checkpoint: 6180716]
 Develop the logic to search for manga and fetch chapter data from MangaLivre, utilizing Playwright for robust fetching.
 
 - [x] **Task: Implement MangaLivre Search (Refactor to Playwright)** (d2f737f)
@@ -25,7 +25,7 @@ Develop the logic to search for manga and fetch chapter data from MangaLivre, ut
     - [ ] Update `MangaLivreScraper.fetchChapters` to use Playwright.
 - [x] **Task: Implement Image Downloading (Refactor to Playwright)** (d2f737f)
     - [ ] Update `MangaLivreScraper.downloadImages` to use Playwright for reliable image extraction.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)** (6180716)
 
 ## Phase 3: CLI Interface and Integration
 Combine the scrapper and conversion logic into a cohesive CLI application.
