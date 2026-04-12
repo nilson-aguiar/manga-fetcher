@@ -11,19 +11,19 @@ The goal is to refactor the `download` command to use a `-c` flag for specifying
 ## Implementation Steps
 
 ### Phase 1: Preparation and Testing
-- [ ] Task: Create a new test case for the new `-c` flag in `DownloaderApplicationTest.kt`.
-    - [ ] Add a test that verifies `DownloadCommand` correctly maps `-c` to a chapter selection.
-    - [ ] Add a test for mutual exclusivity between `-c` and `--from`.
-    - [ ] Add a test verifying that the positional chapter ID is no longer accepted.
-- [ ] Task: Update `CLIIntegrationIT.kt` if necessary to use the new flag format.
+- [x] Task: Create a new test case for the new `-c` flag in `DownloaderApplicationTest.kt`. 88c291c
+    - [x] Add a test that verifies `DownloadCommand` correctly maps `-c` to a chapter selection.
+    - [x] Add a test for mutual exclusivity between `-c` and `--from`.
+    - [x] Add a test verifying that the positional chapter ID is no longer accepted.
+- [x] Task: Update `CLIIntegrationIT.kt` if necessary to use the new flag format. 88c291c
 
 ### Phase 2: Refactor `DownloadCommand`
-- [ ] Task: Modify `DownloadCommand` in `DownloaderApplication.kt`.
-    - [ ] Remove the positional `chapterId` parameter.
-    - [ ] Add the `@CommandLine.Option(names = ["-c", "--chapter"])` for `chapterNumber`.
-    - [ ] Update the `call()` method to use the `chapterNumber` for filtering.
-    - [ ] Implement mutual exclusivity check between `chapterNumber` and `fromChapter`.
-- [ ] Task: Verify all tests pass (TDD: Green Phase).
+- [x] Task: Modify `DownloadCommand` in `DownloaderApplication.kt`. 88c291c
+    - [x] Remove the positional `chapterId` parameter.
+    - [x] Add the `@CommandLine.Option(names = ["-c", "--chapter"])` for `chapterNumber`.
+    - [x] Update the `call()` method to use the `chapterNumber` for filtering.
+    - [x] Implement mutual exclusivity check between `chapterNumber` and `fromChapter`.
+- [x] Task: Verify all tests pass (TDD: Green Phase). 88c291c
 
 ### Phase 3: Finalization
 - [ ] Task: Update the `workflow.md` examples and `README.md` (if any) to reflect the command changes.
