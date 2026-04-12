@@ -10,11 +10,11 @@
     - [ ] Handle Playwright dependencies (e.g., `playwright install`).
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: CI Workflow Foundation' (Protocol in workflow.md)** 400ac62
 
-## Phase 2: GraalVM Native Image Build
+## Phase 2: GraalVM Native Image Build [checkpoint: bb57098]
 - [x] **Task: Configure GraalVM Native Image Compilation** ff18186
     - [ ] Add `native-image` build step to the workflow.
     - [ ] Verify native binary generation on standard Linux runner.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: GraalVM Native Image Build' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: GraalVM Native Image Build' (Protocol in workflow.md)** bb57098
 
 ## Phase 3: Dockerization & Multi-arch Support
 - [ ] **Task: Create Dockerfile**
