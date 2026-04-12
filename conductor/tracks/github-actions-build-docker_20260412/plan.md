@@ -11,7 +11,7 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: CI Workflow Foundation' (Protocol in workflow.md)** 400ac62
 
 ## Phase 2: GraalVM Native Image Build
-- [ ] **Task: Configure GraalVM Native Image Compilation**
+- [x] **Task: Configure GraalVM Native Image Compilation** ff18186
     - [ ] Add `native-image` build step to the workflow.
     - [ ] Verify native binary generation on standard Linux runner.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2: GraalVM Native Image Build' (Protocol in workflow.md)**
