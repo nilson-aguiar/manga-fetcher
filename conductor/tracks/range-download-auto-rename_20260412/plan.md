@@ -29,11 +29,11 @@ Implement a range-based download option for the Manga Fetcher CLI and add automa
     - [x] Write unit tests for naming logic and renaming operations.
 - [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
-## Phase 4: CLI Integration & Final Verification
-- [ ] Task: Update `DownloadCommand.call()` to orchestrate the new flow.
-    - [ ] Integrate filtering, checking, downloading, and renaming.
-    - [ ] Ensure proper logging and error handling for skipped files.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
+## Phase 4: CLI Integration & Final Verification [checkpoint: a210c6a]
+- [x] Task: Update `DownloadCommand.call()` to orchestrate the new flow. [ae4d5aa]
+    - [x] Integrate filtering, checking, downloading, and renaming.
+    - [x] Ensure proper logging and error handling for skipped files.
+- [x] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
 
 ## Verification & Testing
 - **Automated Tests:** Run `./gradlew test` to ensure all new tests pass and coverage is maintained.
