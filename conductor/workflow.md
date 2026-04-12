@@ -166,7 +166,7 @@ Before marking any task complete, verify:
 
 # Run the CLI application
 ./gradlew run --args="search 'Solo Leveling'"
-./gradlew run --args="download solo-leveling capitulo-00 -o downloads"
+./gradlew run --args="download solo-leveling -c 00 -o downloads"
 ```
 
 ### Before Committing

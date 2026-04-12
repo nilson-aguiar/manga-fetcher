@@ -24,7 +24,7 @@ Search for a manga:
 
 Download a chapter (example):
 ```bash
-./gradlew run --args="download solo-leveling capitulo-00 -o downloads"
+./gradlew run --args="download solo-leveling -c 00 -o downloads"
 ```
 
 ## Native Binary
@@ -40,4 +40,5 @@ The binary will be located at `build/native/nativeCompile/manga-fetcher`.
 ## Commands
 
 - `search <title>`: Search for manga on MangaLivre.
-- `download <mangaId> <chapterId> [-o <outputDir>]`: Download a specific chapter and convert it to CBZ.
+- `download <mangaId> -c <chapterNumber> [-o <outputDir>]`: Download a specific chapter and convert it to CBZ.
+- `download <mangaId> --from <chapterNumber> [-o <outputDir>]`: Download all chapters starting from a specific one.
