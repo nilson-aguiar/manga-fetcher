@@ -9,7 +9,7 @@ Implement a range-based download option for the Manga Fetcher CLI and add automa
 - `CbzConverter.kt`: Handles the creation of `.cbz` files.
 
 ## Phase 1: Preparation & Metadata Enhancement
-- [ ] Task: Update `ChapterResult` and scraper logic to attempt volume extraction.
+- [x] Task: Update `ChapterResult` and scraper logic to attempt volume extraction. [a58e4f2]
     - [ ] Update `ChapterResult` to include `val volume: String? = null`.
     - [ ] Update `parseChapters` in `MangaLivreScraper.kt` to extract volume information from the HTML if possible.
     - [ ] Write tests to verify `parseChapters` correctly identifies volume when present.
