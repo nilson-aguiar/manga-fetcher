@@ -101,18 +101,15 @@ class DownloadCommand(
                     val cNum = chapter.number
                     val volume = chapter.volume
 
-                    // Auto-rename existing files if volume is now available
-                    if (ChapterNamingUtils.renameIfVolumeAvailable(outputDir, cNum, volume)) {
-                        println("Renamed existing file for chapter $cNum to include volume $volume")
+                    // Standardize existing file naming (handles old formats and volume additions)
+                    if (ChapterNamingUtils.ensureCorrectNaming(outputDir, mangaId, cId, cNum, volume)) {
+                        println("Standardized filename for chapter $cNum")
                     }
 
-                    // Check if file already exists
-                    val existingFile = ChapterNamingUtils.findExistingFile(outputDir, cNum)
-                    val isAlreadyDownloaded = existingFile != null || 
-                                             java.io.File(outputDir, "$mangaId-$cId.cbz").exists()
-
-                    if (isAlreadyDownloaded) {
-                        println("Skipping chapter $cNum (already exists).")
+                    // Check if chapter is already downloaded (now standardized)
+                    val existingFile = ChapterNamingUtils.findExistingFile(outputDir, cNum, mangaId, cId)
+                    if (existingFile != null) {
+                        println("Skipping chapter $cNum (already exists as ${existingFile.name}).")
                         continue
                     }
 

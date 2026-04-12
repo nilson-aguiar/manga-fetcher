@@ -48,7 +48,7 @@ class ChapterNamingTest {
         val file = File(tempDir, "Ch. 200.cbz")
         file.createNewFile()
 
-        val renamed = ChapterNamingUtils.renameIfVolumeAvailable(tempDir, "200", "Vol. 34")
+        val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "manga-id", "chapter-id", "200", "Vol. 34")
         assertTrue(renamed)
 
         assertFalse(File(tempDir, "Ch. 200.cbz").exists())
@@ -60,17 +60,28 @@ class ChapterNamingTest {
         val file = File(tempDir, "Vol. 34 Ch. 200.cbz")
         file.createNewFile()
 
-        val renamed = ChapterNamingUtils.renameIfVolumeAvailable(tempDir, "200", "Vol. 34")
+        val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "manga-id", "chapter-id", "200", "Vol. 34")
         assertFalse(renamed)
         assertTrue(File(tempDir, "Vol. 34 Ch. 200.cbz").exists())
     }
 
     @Test
-    fun `should not rename if volume is null`() {
+    fun `should rename if volume is null`() {
         val file = File(tempDir, "Ch. 200.cbz")
         file.createNewFile()
 
-        val renamed = ChapterNamingUtils.renameIfVolumeAvailable(tempDir, "200", null)
-        assertFalse(renamed)
+        val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "manga-id", "chapter-id", "200", null)
+        assertFalse(renamed, "Should not rename if already in correct default format")
+    }
+
+    @Test
+    fun `should rename from old format to new format`() {
+        val oldFile = File(tempDir, "solo-leveling-capitulo-00.cbz")
+        oldFile.createNewFile()
+
+        val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "solo-leveling", "capitulo-00", "00", null)
+        assertTrue(renamed, "Should rename old format to new format")
+        assertFalse(File(tempDir, "solo-leveling-capitulo-00.cbz").exists())
+        assertTrue(File(tempDir, "Ch. 00.cbz").exists())
     }
 }
