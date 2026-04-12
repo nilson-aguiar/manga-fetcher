@@ -6,7 +6,10 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 class CbzConverter {
-    fun convert(images: List<File>, outputFile: File) {
+    fun convert(
+        images: List<File>,
+        outputFile: File,
+    ) {
         outputFile.parentFile?.mkdirs()
         ZipOutputStream(FileOutputStream(outputFile)).use { zipOut ->
             images.forEach { image ->

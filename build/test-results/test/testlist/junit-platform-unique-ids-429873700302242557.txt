@@ -1,0 +1,7 @@
+[engine:junit-jupiter]/[class:com.mangafetcher.downloader.CbzConverterTest]/[method:should create cbz from list of images()]
+[engine:junit-jupiter]/[class:com.mangafetcher.downloader.CoreHttpClientTest]/[method:should respect rate limit()]
+[engine:junit-jupiter]/[class:com.mangafetcher.downloader.CoreHttpClientTest]/[method:should fetch content from server()]
+[engine:junit-jupiter]/[class:com.mangafetcher.downloader.CoreHttpClientTest]/[method:should retry on 5xx error()]
+[engine:junit-jupiter]/[class:com.mangafetcher.downloader.DownloaderApplicationTest]/[method:should show help message()]
+[engine:junit-jupiter]/[class:com.mangafetcher.downloader.SetupTest]/[method:should have okhttp in classpath()]
+[engine:junit-jupiter]/[class:com.mangafetcher.downloader.SetupTest]/[method:should have picocli in classpath()]

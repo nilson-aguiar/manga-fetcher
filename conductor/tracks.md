@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Build core manga downloader and .cbz converter**
+- [~] **Track: Build core manga downloader and .cbz converter**
   *Link: [./tracks/core_downloader_20260412/](./tracks/core_downloader_20260412/)*

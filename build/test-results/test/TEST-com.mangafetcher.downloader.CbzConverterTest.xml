@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.mangafetcher.downloader.CbzConverterTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-04-12T15:04:38.312Z" hostname="LMAC-KQLMXGTH6D" time="0.049">
+  <properties/>
+  <testcase name="should create cbz from list of images()" classname="com.mangafetcher.downloader.CbzConverterTest" time="0.041"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
