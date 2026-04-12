@@ -31,4 +31,12 @@ class CIConfigurationTest {
         val dockerfile = File("Dockerfile")
         assertTrue(dockerfile.exists(), "Dockerfile should exist")
     }
+
+    @Test
+    fun `workflow contains buildx and build-push actions`() {
+        val workflowFile = File(".github/workflows/build-and-push.yml")
+        val content = workflowFile.readText()
+        assertTrue(content.contains("docker/setup-buildx-action"), "Workflow should contain 'docker/setup-buildx-action'")
+        assertTrue(content.contains("docker/build-push-action"), "Workflow should contain 'docker/build-push-action'")
+    }
 }
