@@ -1,6 +1,6 @@
 # Implementation Plan: Build core manga downloader and .cbz converter
 
-## Phase 1: Project Scaffolding and Core Utilities
+## Phase 1: Project Scaffolding and Core Utilities [checkpoint: 7a8c947]
 Initialize the Kotlin/Gradle project and implement basic utility classes for network requests and file management.
 
 - [x] **Task: Setup Gradle Project** (b51120c)
@@ -13,7 +13,7 @@ Initialize the Kotlin/Gradle project and implement basic utility classes for net
 - [x] **Task: Implement CBZ Conversion Utility** (0d859ef)
     - [ ] Write tests for zipping a list of images into a .cbz file.
     - [ ] Implement the `CbzConverter` using standard JVM zip libraries.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
 
 ## Phase 2: MangaLivre Scrapper Implementation
 Develop the logic to search for manga and fetch chapter data from MangaLivre.
