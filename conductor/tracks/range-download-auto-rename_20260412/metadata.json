@@ -1,0 +1,8 @@
+{
+  "track_id": "range-download-auto-rename_20260412",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-04-12T14:30:00Z",
+  "updated_at": "2026-04-12T14:30:00Z",
+  "description": "I want the cli to have an option that would download all following chapters or a single chapter, if the option is to download all chapters starting from X, first it should check the download folder for all existing files if the file is not present yet. The files should be created in the following format: Vol. 34 Ch. 204.cbz if the volumen is not known yet, it should be Ch. 204.cbz, and later when a volume is released the files should be renamed to add the Volume."
+}

@@ -4,3 +4,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [ ] **Track: Chapter Download Range and Volume Auto-Rename**
+*Link: [./tracks/range-download-auto-rename_20260412/](./tracks/range-download-auto-rename_20260412/)*
+
