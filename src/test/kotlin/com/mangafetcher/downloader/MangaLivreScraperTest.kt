@@ -61,4 +61,25 @@ class MangaLivreScraperTest {
         assertEquals("Capítulo 200", results[0].number)
         assertEquals("capitulo-200", results[0].id)
     }
+
+    @Test
+    fun `should parse chapters with volume information`() {
+        val html =
+            """
+            <html>
+                <body>
+                    <li class="wp-manga-chapter">
+                        <span class="vol">Vol. 34</span>
+                        <a href="https://site.com/manga/solo-leveling/capitulo-200/">Capítulo 200</a>
+                    </li>
+                </body>
+            </html>
+            """.trimIndent()
+
+        val results = scraper.parseChapters(html)
+
+        assertEquals(1, results.size)
+        assertEquals("Vol. 34", results[0].volume)
+        assertEquals("Capítulo 200", results[0].number)
+    }
 }

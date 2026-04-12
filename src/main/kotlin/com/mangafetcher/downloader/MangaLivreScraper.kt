@@ -15,6 +15,7 @@ data class MangaResult(
 data class ChapterResult(
     val number: String,
     val id: String,
+    val volume: String? = null,
 )
 
 class MangaLivreScraper(
@@ -68,7 +69,16 @@ class MangaLivreScraper(
             val number = element.text().trim()
             val href = element.attr("href").removeSuffix("/")
             val id = href.substringAfterLast("/")
-            ChapterResult(number, id)
+
+            // Attempt to find volume info in the parent or siblings
+            val parent = element.parent()
+            val volume =
+                parent
+                    ?.select(".vol, .volume")
+                    ?.first()
+                    ?.text()
+                    ?.trim()
+            ChapterResult(number, id, volume)
         }
     }
 

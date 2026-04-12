@@ -4,6 +4,7 @@ plugins {
     id("org.graalvm.buildtools.native") version "0.11.5"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
     application
+    jacoco
 }
 
 application {
