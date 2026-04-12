@@ -21,7 +21,7 @@ Develop the logic to search for manga and fetch chapter data from MangaLivre.
 - [x] **Task: Implement MangaLivre Search** (7b27328)
     - [ ] Write tests for searching manga on MangaLivre.
     - [ ] Implement `MangaLivreScraper.search(title)` to return a list of manga results.
-- [ ] **Task: Implement Chapter Fetching**
+- [x] **Task: Implement Chapter Fetching** (bf1e137)
     - [ ] Write tests for fetching chapter URLs for a given manga.
     - [ ] Implement `MangaLivreScraper.fetchChapters(mangaId)`.
 - [ ] **Task: Implement Image Downloading**
