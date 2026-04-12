@@ -7,19 +7,29 @@ import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.options.LoadState
 import org.jsoup.Jsoup
 
-data class MangaResult(val title: String, val id: String)
-data class ChapterResult(val number: String, val id: String)
+data class MangaResult(
+    val title: String,
+    val id: String,
+)
+
+data class ChapterResult(
+    val number: String,
+    val id: String,
+)
 
 class MangaLivreScraper(
-    private val baseUrl: String = "https://mangalivre.to"
+    private val baseUrl: String = "https://mangalivre.to",
 ) : AutoCloseable {
-
     private val playwright: Playwright = Playwright.create()
     private val browser: Browser = playwright.chromium().launch(BrowserType.LaunchOptions().setHeadless(true))
-    private val context = browser.newContext(
-        Browser.NewContextOptions()
-            .setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36")
-    )
+    private val context =
+        browser.newContext(
+            Browser
+                .NewContextOptions()
+                .setUserAgent(
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+                ),
+        )
 
     private fun getPageContent(url: String): String {
         val page = context.newPage()
@@ -62,7 +72,11 @@ class MangaLivreScraper(
         }
     }
 
-    fun downloadImages(mangaId: String, chapterId: String, outputDir: java.io.File): List<java.io.File> {
+    fun downloadImages(
+        mangaId: String,
+        chapterId: String,
+        outputDir: java.io.File,
+    ): List<java.io.File> {
         val page = context.newPage()
         try {
             val url = "$baseUrl/manga/$mangaId/$chapterId/"
@@ -70,7 +84,10 @@ class MangaLivreScraper(
             page.waitForLoadState(LoadState.DOMCONTENTLOADED)
 
             try {
-                page.waitForSelector(".reading-content img, .page-break img, img.wp-manga-chapter-img", Page.WaitForSelectorOptions().setTimeout(5000.0))
+                page.waitForSelector(
+                    ".reading-content img, .page-break img, img.wp-manga-chapter-img",
+                    Page.WaitForSelectorOptions().setTimeout(5000.0),
+                )
             } catch (e: Exception) {
                 // Ignore
             }
@@ -86,26 +103,27 @@ class MangaLivreScraper(
 
             val imageElements = doc.select(".reading-content img, .page-break img, img.wp-manga-chapter-img")
 
-            return imageElements.mapIndexed { index, element ->
-                var imgUrl = element.attr("data-src").trim()
-                if (imgUrl.isEmpty()) imgUrl = element.attr("src").trim()
-                if (imgUrl.isEmpty()) return@mapIndexed null
+            return imageElements
+                .mapIndexed { index, element ->
+                    var imgUrl = element.attr("data-src").trim()
+                    if (imgUrl.isEmpty()) imgUrl = element.attr("src").trim()
+                    if (imgUrl.isEmpty()) return@mapIndexed null
 
-                try {
-                    val response = page.request().get(imgUrl)
-                    if (response.ok()) {
-                        val bytes = response.body()
-                        val extension = imgUrl.substringAfterLast(".", "jpg").substringBefore("?")
-                        val file = java.io.File(outputDir, "%03d.$extension".format(index + 1))
-                        file.writeBytes(bytes)
-                        file
-                    } else {
+                    try {
+                        val response = page.request().get(imgUrl)
+                        if (response.ok()) {
+                            val bytes = response.body()
+                            val extension = imgUrl.substringAfterLast(".", "jpg").substringBefore("?")
+                            val file = java.io.File(outputDir, "%03d.$extension".format(index + 1))
+                            file.writeBytes(bytes)
+                            file
+                        } else {
+                            null
+                        }
+                    } catch (e: Exception) {
                         null
                     }
-                } catch (e: Exception) {
-                    null
-                }
-            }.filterNotNull()
+                }.filterNotNull()
         } finally {
             page.close()
         }

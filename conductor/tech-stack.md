@@ -9,7 +9,11 @@
 - **Picocli (GraalVM Optimized):** A modern, feature-rich CLI framework specifically designed for GraalVM compatibility.
 
 ## Network and Scrapping
-- **OkHttp:** A robust and efficient HTTP client for handling scrapper requests.
+- **Playwright:** A modern browser automation library for handling JavaScript-heavy sites and bypassing anti-bot protections.
+- **Jsoup:** Still used for parsing HTML content when static snapshots are sufficient.
+
+### Design Deviations
+- **2026-04-12:** Switched from OkHttp to Playwright for the scrapper to ensure better reliability with JS-rendered content and sites using anti-bot protections like Cloudflare, which are common in the manga ecosystem. While this increases overhead and complicates GraalVM native image support, it's a necessary trade-off for core functionality.
 
 ## File Processing
 - **Kotlin Zip Library (Standard):** Standard JVM libraries for creating and managing .cbz (ZIP) files.

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.mangafetcher.downloader.DownloaderApplicationTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-04-12T15:04:38.700Z" hostname="LMAC-KQLMXGTH6D" time="0.042">
-  <properties/>
-  <testcase name="should show help message()" classname="com.mangafetcher.downloader.DownloaderApplicationTest" time="0.041"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

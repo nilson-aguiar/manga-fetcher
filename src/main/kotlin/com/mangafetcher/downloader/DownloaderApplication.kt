@@ -12,8 +12,8 @@ import kotlin.system.exitProcess
     description = ["Download manga and convert to .cbz files."],
     subcommands = [
         SearchCommand::class,
-        DownloadCommand::class
-    ]
+        DownloadCommand::class,
+    ],
 )
 class DownloaderApplication : Callable<Int> {
     override fun call(): Int = 0
@@ -21,7 +21,7 @@ class DownloaderApplication : Callable<Int> {
 
 @Command(name = "search", description = ["Search for manga by title"])
 class SearchCommand(
-    private val scraper: MangaLivreScraper = MangaLivreScraper()
+    private val scraper: MangaLivreScraper = MangaLivreScraper(),
 ) : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["Title to search for"])
     lateinit var title: String
@@ -43,7 +43,7 @@ class SearchCommand(
 @Command(name = "download", description = ["Download a specific chapter of a manga"])
 class DownloadCommand(
     private val scraper: MangaLivreScraper = MangaLivreScraper(),
-    private val converter: CbzConverter = CbzConverter()
+    private val converter: CbzConverter = CbzConverter(),
 ) : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["Manga ID"])
     lateinit var mangaId: String
@@ -56,8 +56,11 @@ class DownloadCommand(
 
     override fun call(): Int {
         val outputDir = java.io.File(output)
-        val tempDir = java.nio.file.Files.createTempDirectory("manga-fetcher-download").toFile()
-        
+        val tempDir =
+            java.nio.file.Files
+                .createTempDirectory("manga-fetcher-download")
+                .toFile()
+
         try {
             scraper.use { s ->
                 println("Downloading images for $mangaId chapter $chapterId...")
@@ -66,7 +69,7 @@ class DownloadCommand(
                     println("Error: No images found or failed to download.")
                     return 1
                 }
-                
+
                 val outputFile = java.io.File(outputDir, "$mangaId-$chapterId.cbz")
                 println("Converting to ${outputFile.absolutePath}...")
                 converter.convert(images, outputFile)

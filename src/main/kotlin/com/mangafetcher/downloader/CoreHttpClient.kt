@@ -6,7 +6,7 @@ import java.io.IOException
 
 class CoreHttpClient(
     private val maxRetries: Int = 3,
-    private val rateLimitMs: Long = 0
+    private val rateLimitMs: Long = 0,
 ) {
     private val client = OkHttpClient()
     private var lastRequestTime = 0L
@@ -18,10 +18,12 @@ class CoreHttpClient(
             try {
                 enforceRateLimit()
 
-                val request = Request.Builder()
-                    .url(url)
-                    .header("User-Agent", "MangaFetcher/0.0.1")
-                    .build()
+                val request =
+                    Request
+                        .Builder()
+                        .url(url)
+                        .header("User-Agent", "MangaFetcher/0.0.1")
+                        .build()
 
                 client.newCall(request).execute().use { response ->
                     if (response.isSuccessful) {
@@ -53,10 +55,12 @@ class CoreHttpClient(
             try {
                 enforceRateLimit()
 
-                val request = Request.Builder()
-                    .url(url)
-                    .header("User-Agent", "MangaFetcher/0.0.1")
-                    .build()
+                val request =
+                    Request
+                        .Builder()
+                        .url(url)
+                        .header("User-Agent", "MangaFetcher/0.0.1")
+                        .build()
 
                 client.newCall(request).execute().use { response ->
                     if (response.isSuccessful) {

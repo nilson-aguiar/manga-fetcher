@@ -1,0 +1,23 @@
+# Project specific
+/downloads/
+/build/
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Kotlin
+.kotlin/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log

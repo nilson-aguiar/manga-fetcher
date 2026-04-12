@@ -9,7 +9,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class CoreHttpClientTest {
-
     private val server = MockWebServer()
 
     @BeforeEach
@@ -30,6 +29,17 @@ class CoreHttpClientTest {
         val response = client.get(server.url("/").toString())
 
         assertEquals("hello world", response)
+    }
+
+    @Test
+    fun `should fetch binary content from server`() {
+        val data = byteArrayOf(1, 2, 3, 4)
+        server.enqueue(MockResponse().setBody(okio.Buffer().write(data)))
+
+        val client = CoreHttpClient()
+        val response = client.getBytes(server.url("/").toString())
+
+        assertTrue(data.contentEquals(response))
     }
 
     @Test

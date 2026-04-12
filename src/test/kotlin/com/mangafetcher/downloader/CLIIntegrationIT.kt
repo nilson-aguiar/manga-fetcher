@@ -8,23 +8,26 @@ import java.nio.file.Files
 import kotlin.test.assertTrue
 
 class CLIIntegrationIT {
-
     @Test
     fun `should search and download using CLI`() {
         val app = DownloaderApplication()
         val cmd = CommandLine(app)
-        
+
         val sw = StringWriter()
         val pw = PrintWriter(sw)
-        
+
         // Capture System.out
         val oldOut = System.out
-        System.setOut(java.io.PrintStream(object : java.io.OutputStream() {
-            override fun write(b: Int) {
-                sw.write(b)
-                oldOut.write(b) // Still print to real out for debugging
-            }
-        }))
+        System.setOut(
+            java.io.PrintStream(
+                object : java.io.OutputStream() {
+                    override fun write(b: Int) {
+                        sw.write(b)
+                        oldOut.write(b) // Still print to real out for debugging
+                    }
+                },
+            ),
+        )
 
         try {
             // 1. Search
@@ -47,10 +50,10 @@ class CLIIntegrationIT {
                 println("Testing CLI download...")
                 val downloadResult = cmd.execute("download", "solo-leveling", firstChapterId, "-o", tempDir.absolutePath)
                 val outputAfterDownload = sw.toString()
-                
+
                 assertTrue(downloadResult == 0, "Download should return 0 exit code")
                 assertTrue(outputAfterDownload.contains("Successfully downloaded"), "Download output should contain success message")
-                
+
                 val expectedFile = tempDir.resolve("solo-leveling-$firstChapterId.cbz")
                 assertTrue(expectedFile.exists(), "Expected .cbz file should exist at ${expectedFile.absolutePath}")
                 assertTrue(expectedFile.length() > 0, "Expected .cbz file should not be empty")

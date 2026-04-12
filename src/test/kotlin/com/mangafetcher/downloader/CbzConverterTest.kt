@@ -10,7 +10,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class CbzConverterTest {
-
     private lateinit var tempDir: File
 
     @BeforeEach
