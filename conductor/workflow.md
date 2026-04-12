@@ -150,27 +150,38 @@ Before marking any task complete, verify:
 
 ## Development Commands
 
-**AI AGENT INSTRUCTION: This section should be adapted to the project's specific language, framework, and build tools.**
-
 ### Setup
 ```bash
-# Example: Commands to set up the development environment (e.g., install dependencies, configure database)
-# e.g., for a Node.js project: npm install
-# e.g., for a Go project: go mod tidy
+# Install dependencies
+./gradlew build -x test
 ```
 
 ### Daily Development
 ```bash
-# Example: Commands for common daily tasks (e.g., start dev server, run tests, lint, format)
-# e.g., for a Node.js project: npm run dev, npm test, npm run lint
-# e.g., for a Go project: go run main.go, go test ./..., go fmt ./...
+# Run all tests
+./gradlew test
+
+# Run a specific test
+./gradlew test --tests "com.mangafetcher.downloader.MangaLivreScraperIT"
+
+# Run the CLI application
+./gradlew run --args="search 'Solo Leveling'"
+./gradlew run --args="download solo-leveling capitulo-00 -o downloads"
 ```
 
 ### Before Committing
 ```bash
-# Example: Commands to run all pre-commit checks (e.g., format, lint, type check, run tests)
-# e.g., for a Node.js project: npm run check
-# e.g., for a Go project: make check (if a Makefile exists)
+# Run tests and check code quality
+./gradlew check
+```
+
+### Native Image
+```bash
+# Build the native binary (requires GraalVM with native-image)
+./gradlew nativeCompile
+
+# Run the native binary
+./build/native/nativeCompile/manga-fetcher --help
 ```
 
 ## Testing Requirements
