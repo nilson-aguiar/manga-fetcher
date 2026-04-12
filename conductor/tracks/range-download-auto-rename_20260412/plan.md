@@ -22,12 +22,12 @@ Implement a range-based download option for the Manga Fetcher CLI and add automa
     - [x] Write unit tests for the filtering logic in `DownloadCommand`.
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
-## Phase 3: File Existence & Renaming Logic
+## Phase 3: File Existence & Renaming Logic [checkpoint: 6da55d5]
 - [x] Task: Implement file existence check and auto-renaming. [ae4d5aa]
-    - [ ] Create a utility or internal function to check if a chapter file already exists in both `Ch. X.cbz` and `Vol. Y Ch. X.cbz` formats.
-    - [ ] Implement logic to rename existing `Ch. X.cbz` files to `Vol. Y Ch. X.cbz` when volume information is available.
-    - [ ] Write unit tests for naming logic and renaming operations.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+    - [x] Create a utility or internal function to check if a chapter file already exists in both `Ch. X.cbz` and `Vol. Y Ch. X.cbz` formats.
+    - [x] Implement logic to rename existing `Ch. X.cbz` files to `Vol. Y Ch. X.cbz` when volume information is available.
+    - [x] Write unit tests for naming logic and renaming operations.
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
 ## Phase 4: CLI Integration & Final Verification
 - [ ] Task: Update `DownloadCommand.call()` to orchestrate the new flow.
