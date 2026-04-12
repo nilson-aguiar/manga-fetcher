@@ -87,4 +87,31 @@ class MangaLivreScraperTest {
         assertEquals("Chapter 1", results[1].number)
         assertEquals("chapter-1", results[1].id)
     }
+
+    @Test
+    fun `should download images and return list of files`() {
+        val html = """
+            <html>
+                <body>
+                    <div class="manga-pages">
+                        <img src="${server.url("/img1.jpg")}">
+                        <img src="${server.url("/img2.jpg")}">
+                    </div>
+                </body>
+            </html>
+        """.trimIndent()
+
+        server.enqueue(MockResponse().setBody(html))
+        server.enqueue(MockResponse().setBody("image1 data"))
+        server.enqueue(MockResponse().setBody("image2 data"))
+
+        val tempDir = java.nio.file.Files.createTempDirectory("scraper-test").toFile()
+        val files = scraper.downloadImages("manga123", "chapter1", tempDir)
+
+        assertEquals(2, files.size)
+        assertEquals("image1 data", files[0].readText())
+        assertEquals("image2 data", files[1].readText())
+        
+        tempDir.deleteRecursively()
+    }
 }

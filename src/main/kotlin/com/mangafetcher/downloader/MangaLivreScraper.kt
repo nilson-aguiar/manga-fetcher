@@ -34,4 +34,20 @@ class MangaLivreScraper(
             ChapterResult(number, id)
         }
     }
+
+    fun downloadImages(mangaId: String, chapterId: String, outputDir: java.io.File): List<java.io.File> {
+        val url = "$baseUrl/manga/$mangaId/$chapterId"
+        val html = client.get(url)
+        val doc = Jsoup.parse(html)
+        
+        outputDir.mkdirs()
+        
+        return doc.select(".manga-pages img").mapIndexed { index, element ->
+            val imgUrl = element.attr("src")
+            val bytes = client.getBytes(imgUrl)
+            val file = java.io.File(outputDir, "%02d.jpg".format(index + 1))
+            file.writeBytes(bytes)
+            file
+        }
+    }
 }
