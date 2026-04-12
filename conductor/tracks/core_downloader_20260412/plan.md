@@ -27,7 +27,7 @@ Develop the logic to search for manga and fetch chapter data from MangaLivre, ut
     - [ ] Update `MangaLivreScraper.downloadImages` to use Playwright for reliable image extraction.
 - [x] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)** (6180716)
 
-## Phase 3: CLI Interface and Integration
+## Phase 3: CLI Interface and Integration [checkpoint: e49d65a]
 Combine the scrapper and conversion logic into a cohesive CLI application.
 
 - [x] **Task: Implement Core CLI Commands** (82d33ff)
@@ -40,4 +40,5 @@ Combine the scrapper and conversion logic into a cohesive CLI application.
     - [ ] Add the GraalVM Gradle plugin.
     - [ ] Configure reflections and other native image settings.
     - [ ] Verify the native image build process.
-- [~] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)** (e49d65a)
+
