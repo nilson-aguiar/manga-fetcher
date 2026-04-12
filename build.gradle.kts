@@ -1,8 +1,8 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("kapt") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
+    kotlin("kapt") version "2.3.0"
     id("org.graalvm.buildtools.native") version "0.11.5"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.0"
     application
     jacoco
 }
@@ -16,7 +16,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -57,8 +57,23 @@ graalvmNative {
             buildArgs.add("--verbose")
             buildArgs.add("--no-fallback")
             buildArgs.add("--initialize-at-build-time=kotlin.DeprecationLevel")
-            // Playwright and OkHttp might need these
+            // Optimization flags for faster builds
+            if (project.hasProperty("quick")) {
+                buildArgs.add("-Ob") // Quick build mode
+            }
+            buildArgs.add("-O1") // Basic optimization (faster than default -O2)
+
+            // Resource management
+            buildArgs.add("-J-Xmx4g")
             buildArgs.add("-H:+ReportExceptionStackTraces")
+            // Initialize Playwright's driver logic at build time to capture resource state
+            buildArgs.add("--initialize-at-build-time=com.microsoft.playwright.impl.driver.jar.DriverJar")
+            buildArgs.add("--initialize-at-build-time=com.microsoft.playwright.impl.driver.Driver")
+            buildArgs.add("--initialize-at-build-time=kotlin.DeprecationLevel")
+
+            // Ensure all resources, specifically the driver binaries, are included
+            buildArgs.add("-H:IncludeResources=driver/.*")
+            buildArgs.add("-H:IncludeResources=.*\\.properties")
         }
     }
 }

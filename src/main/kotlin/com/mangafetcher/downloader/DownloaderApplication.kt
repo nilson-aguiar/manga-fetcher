@@ -142,5 +142,18 @@ class DownloadCommand(
 }
 
 fun main(args: Array<String>) {
+    try {
+        val uri = java.net.URI.create("resource:/")
+        try {
+            java.nio.file.FileSystems
+                .getFileSystem(uri)
+        } catch (e: java.nio.file.FileSystemNotFoundException) {
+            java.nio.file.FileSystems
+                .newFileSystem(uri, emptyMap<String, Any>())
+        }
+    } catch (e: Exception) {
+        // Ignore initialization errors if we are not in a native image or it fails
+    }
+
     exitProcess(CommandLine(DownloaderApplication()).execute(*args))
 }

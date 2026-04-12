@@ -1,0 +1,39 @@
+[
+  {
+    "name": "com.microsoft.playwright.impl.driver.jar.DriverJar",
+    "allPublicConstructors": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.microsoft.playwright.impl.PlaywrightImpl",
+    "allPublicConstructors": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.microsoft.playwright.impl.BrowserTypeImpl",
+    "allPublicConstructors": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.microsoft.playwright.impl.driver.Driver",
+    "allPublicConstructors": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.microsoft.playwright.impl.Message",
+    "allPublicConstructors": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "unsafeAllocated": true
+  }
+]
