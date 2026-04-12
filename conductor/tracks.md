@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: plan github actions that builds the app and generates a docker image**
+- [x] **Track: plan github actions that builds the app and generates a docker image**
 *Link: [./tracks/github-actions-build-docker_20260412/](./tracks/github-actions-build-docker_20260412/)*
