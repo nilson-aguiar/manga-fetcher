@@ -55,4 +55,36 @@ class MangaLivreScraperTest {
         assertEquals("One Piece", results[1].title)
         assertEquals("456", results[1].id)
     }
+
+    @Test
+    fun `should fetch chapters and return list of results`() {
+        val html = """
+            <html>
+                <body>
+                    <ul class="chapterList">
+                        <li>
+                            <a href="/manga/solo-leveling/123/chapter-2" title="Chapter 2">
+                                <span class="chapter-number">Chapter 2</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/manga/solo-leveling/123/chapter-1" title="Chapter 1">
+                                <span class="chapter-number">Chapter 1</span>
+                            </a>
+                        </li>
+                    </ul>
+                </body>
+            </html>
+        """.trimIndent()
+
+        server.enqueue(MockResponse().setBody(html))
+
+        val results = scraper.fetchChapters("123")
+
+        assertEquals(2, results.size)
+        assertEquals("Chapter 2", results[0].number)
+        assertEquals("chapter-2", results[0].id)
+        assertEquals("Chapter 1", results[1].number)
+        assertEquals("chapter-1", results[1].id)
+    }
 }
