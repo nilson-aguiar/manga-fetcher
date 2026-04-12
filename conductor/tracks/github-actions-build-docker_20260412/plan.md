@@ -17,12 +17,13 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: GraalVM Native Image Build' (Protocol in workflow.md)** bb57098
 
 ## Phase 3: Dockerization & Multi-arch Support
-- [x] **Task: Create Dockerfile** 43a1e72
-    - [ ] Write a multi-stage Dockerfile that uses the native binary.
-    - [ ] Ensure the final image is minimal (e.g., using `distroless` or `alpine`).
-- [x] **Task: Configure Multi-arch Build with Buildx** ba7a62a
+- [x] **Task: Create Dockerfiles (Standard & Native)** 32f3d8f
+    - [x] Write a multi-stage `Dockerfile` (Standard JVM).
+    - [x] Write a multi-stage `Dockerfile-native` (GraalVM Native Image).
+- [x] **Task: Configure Multi-arch Build with Buildx** 18e3024
     - [ ] Add `docker/setup-qemu-action` and `docker/setup-buildx-action` to the workflow.
-    - [ ] Implement the build step for `linux/amd64` and `linux/arm64`.
+    - [ ] Implement the build step for both `Dockerfile` and `Dockerfile-native`.
+
 - [ ] **Task: Conductor - User Manual Verification 'Phase 3: Dockerization & Multi-arch Support' (Protocol in workflow.md)**
 
 ## Phase 4: GHCR Push and Release Tags
