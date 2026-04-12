@@ -16,15 +16,14 @@
     - [ ] Verify native binary generation on standard Linux runner.
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: GraalVM Native Image Build' (Protocol in workflow.md)** bb57098
 
-## Phase 3: Dockerization & Multi-arch Support
+## Phase 3: Dockerization & Multi-arch Support [checkpoint: f510a8d]
 - [x] **Task: Create Dockerfiles (Standard & Native)** 32f3d8f
     - [x] Write a multi-stage `Dockerfile` (Standard JVM).
     - [x] Write a multi-stage `Dockerfile-native` (GraalVM Native Image).
 - [x] **Task: Configure Multi-arch Build with Buildx** 18e3024
     - [ ] Add `docker/setup-qemu-action` and `docker/setup-buildx-action` to the workflow.
     - [ ] Implement the build step for both `Dockerfile` and `Dockerfile-native`.
-
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3: Dockerization & Multi-arch Support' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 3: Dockerization & Multi-arch Support' (Protocol in workflow.md)** f510a8d
 
 ## Phase 4: GHCR Push and Release Tags
 - [ ] **Task: Implement Registry Authentication**
