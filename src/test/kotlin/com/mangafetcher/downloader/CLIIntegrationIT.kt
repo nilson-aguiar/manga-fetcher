@@ -37,25 +37,26 @@ class CLIIntegrationIT {
             assertTrue(searchResult == 0, "Search should return 0 exit code")
             assertTrue(outputAfterSearch.contains("Solo Leveling"), "Search output should contain 'Solo Leveling'")
 
-            // Get a real chapter ID to ensure download works
+            // Get a real chapter to ensure download works
             val scraper = MangaLivreScraper()
             val chapters = scraper.use { it.fetchChapters("solo-leveling") }
             assertTrue(chapters.isNotEmpty(), "Should find chapters for solo-leveling")
-            val firstChapterId = chapters.last().id
-            println("Found real chapter ID: $firstChapterId")
+            val firstChapter = chapters.last() // Usually last is the first chapter
+            val firstChapterNum = firstChapter.number
+            println("Found real chapter number: $firstChapterNum")
 
             // 2. Download
             val tempDir = Files.createTempDirectory("cli-integration-it").toFile()
             try {
                 println("Testing CLI download...")
-                val downloadResult = cmd.execute("download", "solo-leveling", firstChapterId, "-o", tempDir.absolutePath)
+                // Use the new -c flag
+                val downloadResult = cmd.execute("download", "solo-leveling", "-c", firstChapterNum, "-o", tempDir.absolutePath)
                 val outputAfterDownload = sw.toString()
 
                 assertTrue(downloadResult == 0, "Download should return 0 exit code")
                 assertTrue(outputAfterDownload.contains("Successfully downloaded"), "Download output should contain success message")
 
-                val chapter = chapters.last()
-                val expectedName = ChapterNamingUtils.getFileName(chapter.number, chapter.volume)
+                val expectedName = ChapterNamingUtils.getFileName(firstChapter.number, firstChapter.volume)
                 val expectedFile = tempDir.resolve(expectedName)
 
                 assertTrue(expectedFile.exists(), "Expected .cbz file should exist at ${expectedFile.absolutePath}")

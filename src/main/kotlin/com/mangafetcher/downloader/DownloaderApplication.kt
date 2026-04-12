@@ -48,20 +48,21 @@ class DownloadCommand(
     @CommandLine.Parameters(index = "0", description = ["Manga ID"])
     lateinit var mangaId: String
 
-    @CommandLine.Parameters(index = "1", description = ["Specific Chapter ID"], arity = "0..1")
-    var chapterId: String? = null
+    @CommandLine.ArgGroup(multiplicity = "1")
+    lateinit var selection: Selection
 
-    @CommandLine.Option(names = ["--from"], description = ["Download all chapters starting from this one"])
-    var fromChapter: String? = null
+    class Selection {
+        @CommandLine.Option(names = ["-c", "--chapter"], description = ["Specific Chapter Number"])
+        var chapterNumber: String? = null
+
+        @CommandLine.Option(names = ["--from"], description = ["Download all chapters starting from this one"])
+        var fromChapter: String? = null
+    }
 
     @CommandLine.Option(names = ["-o", "--output", "--output-dir"], description = ["Output directory"], defaultValue = ".")
     lateinit var output: String
 
     override fun call(): Int {
-        if (chapterId == null && fromChapter == null) {
-            println("Error: Either a specific Chapter ID or --from chapter must be provided.")
-            return 1
-        }
         val outputDir = java.io.File(output)
         outputDir.mkdirs()
 
@@ -79,14 +80,12 @@ class DownloadCommand(
                 }
 
                 val chaptersToDownload =
-                    if (chapterId != null) {
-                        allChapters.filter { it.id == chapterId }
+                    if (selection.chapterNumber != null) {
+                        val targetNum = extractNumber(selection.chapterNumber!!)
+                        allChapters.filter { extractNumber(it.number) == targetNum }
                     } else {
-                        val fromNum = fromChapter!!.toDoubleOrNull() ?: extractNumber(fromChapter!!)
-                        allChapters.filter {
-                            val currentNum = it.number.toDoubleOrNull() ?: extractNumber(it.number)
-                            currentNum >= fromNum
-                        }
+                        val fromNum = extractNumber(selection.fromChapter!!)
+                        allChapters.filter { extractNumber(it.number) >= fromNum }
                     }
 
                 if (chaptersToDownload.isEmpty()) {
