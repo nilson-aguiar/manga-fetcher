@@ -23,6 +23,7 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+	testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
