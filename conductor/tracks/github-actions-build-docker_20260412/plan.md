@@ -17,7 +17,7 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: GraalVM Native Image Build' (Protocol in workflow.md)** bb57098
 
 ## Phase 3: Dockerization & Multi-arch Support
-- [ ] **Task: Create Dockerfile**
+- [x] **Task: Create Dockerfile** 43a1e72
     - [ ] Write a multi-stage Dockerfile that uses the native binary.
     - [ ] Ensure the final image is minimal (e.g., using `distroless` or `alpine`).
 - [ ] **Task: Configure Multi-arch Build with Buildx**
