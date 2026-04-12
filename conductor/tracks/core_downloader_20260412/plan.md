@@ -30,10 +30,10 @@ Develop the logic to search for manga and fetch chapter data from MangaLivre, ut
 ## Phase 3: CLI Interface and Integration
 Combine the scrapper and conversion logic into a cohesive CLI application.
 
-- [ ] **Task: Implement Core CLI Commands**
+- [x] **Task: Implement Core CLI Commands** (82d33ff)
     - [ ] Write tests for Picocli command parsing.
     - [ ] Implement `search` and `download` commands.
-- [ ] **Task: Integrate Scrapper with Converter**
+- [~] **Task: Integrate Scrapper with Converter**
     - [ ] Write tests for the full search-download-convert flow.
     - [ ] Implement the integration logic in the CLI commands.
 - [ ] **Task: GraalVM Native Image Configuration**
