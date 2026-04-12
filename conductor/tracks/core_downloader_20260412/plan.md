@@ -36,8 +36,8 @@ Combine the scrapper and conversion logic into a cohesive CLI application.
 - [x] **Task: Integrate Scrapper with Converter** (add4c61)
     - [ ] Write tests for the full search-download-convert flow.
     - [ ] Implement the integration logic in the CLI commands.
-- [~] **Task: GraalVM Native Image Configuration**
+- [x] **Task: GraalVM Native Image Configuration** (17f0f1f)
     - [ ] Add the GraalVM Gradle plugin.
     - [ ] Configure reflections and other native image settings.
     - [ ] Verify the native image build process.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
+- [~] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
