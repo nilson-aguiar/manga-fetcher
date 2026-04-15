@@ -3,12 +3,27 @@ name: Build and Push (Standard)
 on:
   push:
     branches: [ "main" ]
-    tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: simple
+
   build:
+    needs: [release]
+    if: always() && !cancelled() && !failure()
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,7 +43,7 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Build and Test with Gradle
-      run: ./gradlew check
+      run: ./gradlew check installDist
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -52,11 +67,14 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern={{major}}
+          # Semantic Versioning (Releases)
+          type=semver,pattern={{version}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created }}
+          type=semver,pattern={{major}}.{{minor}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created }}
+          type=semver,pattern={{major}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created }}
+          type=raw,value=latest,enable=${{ needs.release.outputs.release_created }}
+          # Unstable / Development Tags
+          type=raw,value=unstable,enable=${{ github.ref == 'refs/heads/main' }}
           type=sha,format=short
-          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
     - name: Build Standard Docker Image
       uses: docker/build-push-action@v6
@@ -67,3 +85,5 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta-std.outputs.tags }}
         labels: ${{ steps.meta-std.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
