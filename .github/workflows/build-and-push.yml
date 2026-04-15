@@ -53,7 +53,10 @@ jobs:
           type=ref,event=branch
           type=ref,event=pr
           type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
           type=sha,format=short
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
     - name: Build Standard Docker Image
       uses: docker/build-push-action@v6
