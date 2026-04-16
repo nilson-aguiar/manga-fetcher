@@ -1,12 +1,11 @@
 package com.mangafetcher.downloader.cli
-import com.mangafetcher.downloader.cli.DownloaderApplication
 import com.mangafetcher.downloader.domain.service.ChapterNamingUtils
 import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
 import org.junit.jupiter.api.Test
 import picocli.CommandLine
-import java.io.PrintWriter
 import java.io.StringWriter
 import java.nio.file.Files
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class CLIIntegrationIT {
@@ -16,7 +15,6 @@ class CLIIntegrationIT {
         val cmd = CommandLine(app)
 
         val sw = StringWriter()
-        val pw = PrintWriter(sw)
 
         // Capture System.out
         val oldOut = System.out
@@ -36,7 +34,7 @@ class CLIIntegrationIT {
             println("Testing CLI search...")
             val searchResult = cmd.execute("search", "solo-leveling")
             val outputAfterSearch = sw.toString()
-            assertTrue(searchResult == 0, "Search should return 0 exit code")
+            assertEquals(searchResult, 0, "Search should return 0 exit code")
             assertTrue(outputAfterSearch.contains("Solo Leveling"), "Search output should contain 'Solo Leveling'")
 
             // Get a real chapter to ensure download works
@@ -55,7 +53,7 @@ class CLIIntegrationIT {
                 val downloadResult = cmd.execute("download", "solo-leveling", "-c", firstChapterNum, "-o", tempDir.absolutePath)
                 val outputAfterDownload = sw.toString()
 
-                assertTrue(downloadResult == 0, "Download should return 0 exit code")
+                assertEquals(downloadResult, 0, "Download should return 0 exit code")
                 assertTrue(outputAfterDownload.contains("Successfully downloaded"), "Download output should contain success message")
 
                 val expectedName = ChapterNamingUtils.getFileName(firstChapter.number, firstChapter.volume)
