@@ -68,10 +68,10 @@ jobs:
           type=ref,event=branch
           type=ref,event=pr
           # Semantic Versioning (Releases)
-          type=semver,pattern={{version}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created }}
-          type=semver,pattern={{major}}.{{minor}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created }}
-          type=semver,pattern={{major}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created }}
-          type=raw,value=latest,enable=${{ needs.release.outputs.release_created }}
+          type=semver,pattern={{version}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created == 'true' }}
+          type=semver,pattern={{major}}.{{minor}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created == 'true' }}
+          type=semver,pattern={{major}},value=${{ needs.release.outputs.tag_name }},enable=${{ needs.release.outputs.release_created == 'true' }}
+          type=raw,value=latest,enable=${{ needs.release.outputs.release_created == 'true' }}
           # Unstable / Development Tags
           type=raw,value=unstable,enable=${{ github.ref == 'refs/heads/main' }}
           type=sha,format=short

@@ -76,13 +76,6 @@ class MangaLivreScraper(
         outputDir: File,
     ): List<File> = imageDownloader.downloadChapterImages(baseUrl, mangaId, chapterId, outputDir)
 
-    // Keep these methods for backward compatibility with tests
-    @Deprecated("Use HtmlParser directly for testing", ReplaceWith("htmlParser.parseSearchResults(html)"))
-    fun parseSearchResults(html: String): List<MangaResult> = htmlParser.parseSearchResults(html)
-
-    @Deprecated("Use HtmlParser directly for testing", ReplaceWith("htmlParser.parseChapters(html)"))
-    fun parseChapters(html: String): List<ChapterResult> = htmlParser.parseChapters(html)
-
     override fun close() {
         playwrightClient.close()
     }

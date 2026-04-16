@@ -6,16 +6,15 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class MangaLivreScraperTest {
-    private lateinit var scraper: MangaLivreScraper
+    private lateinit var htmlParser: HtmlParser
 
     @BeforeEach
     fun setUp() {
-        scraper = MangaLivreScraper()
+        htmlParser = HtmlParser()
     }
 
     @AfterEach
     fun tearDown() {
-        scraper.close()
     }
 
     @Test
@@ -35,7 +34,7 @@ class MangaLivreScraperTest {
             </html>
             """.trimIndent()
 
-        val results = scraper.parseSearchResults(html)
+        val results = htmlParser.parseSearchResults(html)
 
         assertEquals(1, results.size)
         assertEquals("Solo Leveling", results[0].title)
@@ -55,7 +54,7 @@ class MangaLivreScraperTest {
             </html>
             """.trimIndent()
 
-        val results = scraper.parseChapters(html)
+        val results = htmlParser.parseChapters(html)
 
         assertEquals(1, results.size)
         assertEquals("Capítulo 200", results[0].number)
@@ -76,7 +75,7 @@ class MangaLivreScraperTest {
             </html>
             """.trimIndent()
 
-        val results = scraper.parseChapters(html)
+        val results = htmlParser.parseChapters(html)
 
         assertEquals(1, results.size)
         assertEquals("Vol. 34", results[0].volume)
