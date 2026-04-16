@@ -5,10 +5,10 @@ import com.mangafetcher.downloader.domain.model.MangaMetadataProvider
 import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
 
 /**
- * Metadata provider adapter for MangaLivre.
+ * Metadata provider for MangaLivre.
  * Delegates to MangaLivreScraper for metadata fetching.
  */
-class MangaLivreMetadataAdapter(
+class MangaLivreMetadataProvider(
     private val scraper: MangaLivreScraper = MangaLivreScraper(),
 ) : MangaMetadataProvider,
     AutoCloseable {

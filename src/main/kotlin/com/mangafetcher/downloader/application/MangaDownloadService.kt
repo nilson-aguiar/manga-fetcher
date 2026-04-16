@@ -6,29 +6,34 @@ import com.mangafetcher.downloader.domain.model.MangaMetadata
 import com.mangafetcher.downloader.domain.model.MangaMetadataProvider
 import com.mangafetcher.downloader.domain.port.DownloadTrackerPort
 import com.mangafetcher.downloader.domain.port.FileConverterPort
-import com.mangafetcher.downloader.domain.port.ImageDownloaderPort
-import com.mangafetcher.downloader.domain.port.MangaScraperPort
+import com.mangafetcher.downloader.domain.port.MangaDownloadProvider
 import com.mangafetcher.downloader.domain.service.ChapterNamingUtils
 import com.mangafetcher.downloader.infrastructure.conversion.CbzConverter
 import com.mangafetcher.downloader.infrastructure.conversion.ComicInfoGenerator
+import com.mangafetcher.downloader.infrastructure.download.CompositeDownloadProvider
+import com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider
+import com.mangafetcher.downloader.infrastructure.metadata.CompositeMetadataProvider
 import com.mangafetcher.downloader.infrastructure.metadata.MangaDexMetadataProvider
+import com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataProvider
 import com.mangafetcher.downloader.infrastructure.persistence.SqliteDownloadRepository
-import com.mangafetcher.downloader.infrastructure.scraper.HtmlParser
-import com.mangafetcher.downloader.infrastructure.scraper.ImageDownloader
 import com.mangafetcher.downloader.infrastructure.scraper.MangaDetails
-import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
-import com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient
 import java.io.File
 
 class MangaDownloadService(
-    private val scraper: MangaScraperPort = MangaLivreScraper(),
+    private val downloadProvider: MangaDownloadProvider =
+        CompositeDownloadProvider(
+            listOf(
+                MangaLivreDownloadProvider(),
+            ),
+        ),
     private val converter: FileConverterPort = CbzConverter(),
-    private val metadataFallback: MangaMetadataProvider = MangaDexMetadataProvider(),
-    private val imageDownloader: ImageDownloaderPort =
-        run {
-            val client = PlaywrightClient()
-            ImageDownloader(client, HtmlParser())
-        },
+    private val metadataProvider: MangaMetadataProvider =
+        CompositeMetadataProvider(
+            listOf(
+                MangaDexMetadataProvider(),
+                MangaLivreMetadataProvider(),
+            ),
+        ),
 ) {
     fun downloadManga(request: DownloadRequest): DownloadResult {
         request.outputDir.mkdirs()
@@ -46,12 +51,12 @@ class MangaDownloadService(
         var failedCount = 0
 
         try {
-            scraper.use { s ->
-                val details = s.fetchMangaDetails(request.mangaId)
+            downloadProvider.use { provider ->
+                val details = provider.fetchMangaDetails(request.mangaId)
                 saveMangaInfo(details, request.outputDir)
                 downloadCover(details.coverUrl, request.outputDir)
 
-                val allChapters = s.fetchChapters(request.mangaId)
+                val allChapters = provider.fetchChapters(request.mangaId)
                 if (allChapters.isEmpty()) {
                     println("No chapters found for manga ${request.mangaId}.")
                     return DownloadResult(0, 0, 0)
@@ -105,7 +110,7 @@ class MangaDownloadService(
                         }
 
                         println("Downloading images for ${request.mangaId} chapter $cNum...")
-                        val images = imageDownloader.downloadChapterImages("https://mangalivre.to", request.mangaId, cId, tempDir)
+                        val images = provider.downloadChapterImages(request.mangaId, cId, tempDir)
                         if (images.isEmpty()) {
                             println("Error: No images found or failed to download chapter $cNum.")
                             failedCount++
@@ -158,18 +163,12 @@ class MangaDownloadService(
         mangaId: String,
         chapter: String,
         volume: String?,
-    ): MangaMetadata? {
-        val primary = (scraper as? MangaMetadataProvider)?.getMetadata(mangaId, chapter, volume)
-        if (primary != null && primary.writer != null) return primary
-
-        // Fallback to MangaDex
-        return try {
-            val title = primary?.series ?: mangaId
-            metadataFallback.getMetadata(title, chapter, volume) ?: primary
+    ): MangaMetadata? =
+        try {
+            metadataProvider.getMetadata(mangaId, chapter, volume)
         } catch (e: Exception) {
-            primary
+            null
         }
-    }
 
     private fun saveMangaInfo(
         details: MangaDetails,
@@ -210,7 +209,7 @@ class MangaDownloadService(
 
         println("Downloading cover image...")
         try {
-            imageDownloader.downloadFile(coverUrl, coverFile)
+            downloadProvider.downloadFile(coverUrl, coverFile)
             println("Saved cover image to cover.jpg")
         } catch (e: Exception) {
             println("Failed to download cover image: ${e.message}")
