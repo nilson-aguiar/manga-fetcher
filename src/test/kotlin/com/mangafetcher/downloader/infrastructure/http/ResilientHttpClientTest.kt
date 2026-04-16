@@ -1,4 +1,4 @@
-package com.mangafetcher.downloader
+package com.mangafetcher.downloader.infrastructure.http
 
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class CoreHttpClientTest {
+class ResilientHttpClientTest {
     private val server = MockWebServer()
 
     @BeforeEach
@@ -25,7 +25,7 @@ class CoreHttpClientTest {
     fun `should fetch content from server`() {
         server.enqueue(MockResponse().setBody("hello world"))
 
-        val client = CoreHttpClient()
+        val client = ResilientHttpClient()
         val response = client.get(server.url("/").toString())
 
         assertEquals("hello world", response)
@@ -36,7 +36,7 @@ class CoreHttpClientTest {
         val data = byteArrayOf(1, 2, 3, 4)
         server.enqueue(MockResponse().setBody(okio.Buffer().write(data)))
 
-        val client = CoreHttpClient()
+        val client = ResilientHttpClient()
         val response = client.getBytes(server.url("/").toString())
 
         assertTrue(data.contentEquals(response))
@@ -47,7 +47,7 @@ class CoreHttpClientTest {
         server.enqueue(MockResponse().setResponseCode(500))
         server.enqueue(MockResponse().setBody("success after retry"))
 
-        val client = CoreHttpClient(maxRetries = 3)
+        val client = ResilientHttpClient(maxRetries = 3)
         val response = client.get(server.url("/").toString())
 
         assertEquals("success after retry", response)
@@ -60,7 +60,7 @@ class CoreHttpClientTest {
         server.enqueue(MockResponse().setBody("2"))
 
         val rateLimitMs = 100L
-        val client = CoreHttpClient(rateLimitMs = rateLimitMs)
+        val client = ResilientHttpClient(rateLimitMs = rateLimitMs)
 
         val start = System.currentTimeMillis()
         client.get(server.url("/1").toString())

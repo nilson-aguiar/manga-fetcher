@@ -1,10 +1,10 @@
-package com.mangafetcher.downloader
+package com.mangafetcher.downloader.infrastructure.http
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
-class CoreHttpClient(
+class ResilientHttpClient(
     private val maxRetries: Int = 3,
     private val rateLimitMs: Long = 0,
 ) {

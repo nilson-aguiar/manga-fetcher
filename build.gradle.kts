@@ -8,7 +8,7 @@ plugins {
 }
 
 application {
-    mainClass.set("com.mangafetcher.downloader.DownloaderApplicationKt")
+    mainClass.set("com.mangafetcher.downloader.cli.DownloaderApplicationKt")
 }
 
 group = "com.mangafetcher"
@@ -32,6 +32,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.18.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -53,7 +54,7 @@ graalvmNative {
     binaries {
         named("main") {
             imageName.set("manga-fetcher")
-            mainClass.set("com.mangafetcher.downloader.DownloaderApplicationKt")
+            mainClass.set("com.mangafetcher.downloader.cli.DownloaderApplicationKt")
             buildArgs.add("--verbose")
             buildArgs.add("--no-fallback")
             buildArgs.add("--initialize-at-build-time=kotlin.DeprecationLevel")

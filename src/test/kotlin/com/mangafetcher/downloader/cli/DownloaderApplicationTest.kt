@@ -1,5 +1,5 @@
-package com.mangafetcher.downloader
-
+package com.mangafetcher.downloader.cli
+import com.mangafetcher.downloader.cli.DownloaderApplication
 import org.junit.jupiter.api.Test
 import picocli.CommandLine
 import java.io.PrintWriter
@@ -61,7 +61,7 @@ class DownloaderApplicationTest {
 
         // Currently index 1 is positional chapterId, so this should fail once refactored
         val exitCode = cmd.execute("download", "manga-id", "chapter-id")
-        
+
         // After refactor, this should return non-zero because of unmatched argument
         assertTrue(exitCode != 0, "Should not accept positional chapter ID")
     }
@@ -76,7 +76,7 @@ class DownloaderApplicationTest {
 
         // Should fail if both are provided
         val exitCode = cmd.execute("download", "manga-id", "-c", "1", "--from", "1")
-        
+
         assertTrue(exitCode != 0, "Should not accept both -c and --from")
     }
 }

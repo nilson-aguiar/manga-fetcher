@@ -1,4 +1,4 @@
-package com.mangafetcher.downloader
+package com.mangafetcher.downloader.infrastructure.scraper
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue

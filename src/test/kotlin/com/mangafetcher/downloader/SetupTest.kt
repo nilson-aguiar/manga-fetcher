@@ -1,5 +1,6 @@
 package com.mangafetcher.downloader
 
+import com.mangafetcher.downloader.cli.DownloaderApplication
 import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Test
 import picocli.CommandLine

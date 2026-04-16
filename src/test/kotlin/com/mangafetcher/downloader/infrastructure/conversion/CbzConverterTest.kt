@@ -1,4 +1,4 @@
-package com.mangafetcher.downloader
+package com.mangafetcher.downloader.infrastructure.conversion
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

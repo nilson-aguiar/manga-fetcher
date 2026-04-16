@@ -1,5 +1,7 @@
-package com.mangafetcher.downloader
-
+package com.mangafetcher.downloader.cli
+import com.mangafetcher.downloader.cli.DownloaderApplication
+import com.mangafetcher.downloader.domain.service.ChapterNamingUtils
+import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
 import org.junit.jupiter.api.Test
 import picocli.CommandLine
 import java.io.PrintWriter

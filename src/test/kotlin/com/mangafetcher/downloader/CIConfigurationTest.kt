@@ -64,7 +64,10 @@ class CIConfigurationTest {
     fun `workflows contain metadata and push configuration`() {
         val stdContent = File(".github/workflows/build-and-push.yml").readText()
         assertTrue(stdContent.contains("docker/metadata-action"), "Standard workflow should contain 'docker/metadata-action'")
-        assertTrue(stdContent.contains("push: \${{ github.event_name != 'pull_request' }}"), "Standard workflow should push only on non-PR events")
+        assertTrue(
+            stdContent.contains("push: \${{ github.event_name != 'pull_request' }}"),
+            "Standard workflow should push only on non-PR events",
+        )
 
         val nativeContent = File(".github/workflows/build-and-push-native.yml").readText()
         assertTrue(nativeContent.contains("docker/metadata-action"), "Native workflow should contain 'docker/metadata-action'")

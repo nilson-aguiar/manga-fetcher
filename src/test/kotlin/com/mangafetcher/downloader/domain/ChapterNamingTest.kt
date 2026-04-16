@@ -1,5 +1,6 @@
-package com.mangafetcher.downloader
+package com.mangafetcher.downloader.domain
 
+import com.mangafetcher.downloader.domain.service.ChapterNamingUtils
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -27,8 +28,17 @@ class ChapterNamingTest {
     @Test
     fun `should format file name`() {
         assertEquals("Ch. 200.cbz", ChapterNamingUtils.getFileName("200"))
-        assertEquals("Vol. 34 Ch. 200.cbz", ChapterNamingUtils.getFileName("200", "Vol. 34"))
+        assertEquals("Vol. 34 Ch. 200.cbz", ChapterNamingUtils.getFileName("200", "Vol. 34", withVolume = true))
+        assertEquals("Vol. 34 Ch. 200.cbz", ChapterNamingUtils.getFileName("200", "Volume 34", withVolume = true))
         assertEquals("Ch. 1.cbz", ChapterNamingUtils.getFileName("01"))
+    }
+
+    @Test
+    fun `should normalize volume label`() {
+        assertEquals("Vol. 34", ChapterNamingUtils.getVolumeLabel("Volume 34"))
+        assertEquals("Vol. 34", ChapterNamingUtils.getVolumeLabel("Vol. 34"))
+        assertEquals("Vol. 34", ChapterNamingUtils.getVolumeLabel("Vol 34"))
+        assertEquals("Vol. 34", ChapterNamingUtils.getVolumeLabel("34"))
     }
 
     @Test
@@ -54,7 +64,7 @@ class ChapterNamingTest {
         val file = File(tempDir, "Ch. 200.cbz")
         file.createNewFile()
 
-        val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "manga-id", "chapter-id", "200", "Vol. 34")
+        val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "manga-id", "chapter-id", "200", "Vol. 34", withVolume = true)
         assertTrue(renamed)
 
         assertFalse(File(tempDir, "Ch. 200.cbz").exists())
@@ -66,7 +76,7 @@ class ChapterNamingTest {
         val file = File(tempDir, "Vol. 34 Ch. 200.cbz")
         file.createNewFile()
 
-        val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "manga-id", "chapter-id", "200", "Vol. 34")
+        val renamed = ChapterNamingUtils.ensureCorrectNaming(tempDir, "manga-id", "chapter-id", "200", "Vol. 34", withVolume = true)
         assertFalse(renamed)
         assertTrue(File(tempDir, "Vol. 34 Ch. 200.cbz").exists())
     }

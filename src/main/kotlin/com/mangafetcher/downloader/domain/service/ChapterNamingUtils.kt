@@ -1,4 +1,4 @@
-package com.mangafetcher.downloader
+package com.mangafetcher.downloader.domain.service
 
 import java.io.File
 
@@ -12,7 +12,7 @@ object ChapterNamingUtils {
                 break
             }
         }
-        
+
         // Remove leading zeros if it's a numeric string (e.g., "01" -> "1", "00" -> "0")
         // But keep "0.5" as is.
         if (label.matches("""0\d+.*""".toRegex())) {
@@ -21,17 +21,30 @@ object ChapterNamingUtils {
                 return if (num % 1.0 == 0.0) num.toInt().toString() else num.toString()
             }
         }
-        
+
         return label
+    }
+
+    fun getVolumeLabel(volume: String): String {
+        val prefixes = listOf("Volume ", "Vol. ", "Vol ")
+        var label = volume
+        for (prefix in prefixes) {
+            if (label.startsWith(prefix, ignoreCase = true)) {
+                label = label.substring(prefix.length).trim()
+                break
+            }
+        }
+        return "Vol. $label"
     }
 
     fun getFileName(
         chapterNumber: String,
         volume: String? = null,
+        withVolume: Boolean = false,
     ): String {
         val label = getChapterLabel(chapterNumber)
-        return if (volume != null) {
-            "$volume Ch. $label.cbz"
+        return if (withVolume && volume != null) {
+            "${getVolumeLabel(volume)} Ch. $label.cbz"
         } else {
             "Ch. $label.cbz"
         }
@@ -65,9 +78,10 @@ object ChapterNamingUtils {
         chapterId: String,
         chapterNumber: String,
         volume: String?,
+        withVolume: Boolean = false,
     ): Boolean {
         val existingFile = findExistingFile(outputDir, chapterNumber, mangaId, chapterId) ?: return false
-        val correctName = getFileName(chapterNumber, volume)
+        val correctName = getFileName(chapterNumber, volume, withVolume)
 
         if (existingFile.name == correctName) return false
 
