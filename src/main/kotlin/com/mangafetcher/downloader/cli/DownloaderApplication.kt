@@ -96,10 +96,23 @@ class DownloadCommand : Callable<Int> {
     @CommandLine.Option(names = ["--with-volume"], description = ["Include volume in the filename (e.g., Vol. 1 Ch. 1.cbz)"])
     var withVolume: Boolean = false
 
+    @CommandLine.Option(
+        names = ["-p", "--provider"],
+        description = ["Download provider to use: composite, mangalivre, taosect"],
+        defaultValue = "composite"
+    )
+    lateinit var provider: String
+
     override fun call(): Int {
+        val downloadProvider = createDownloadProvider(provider)
+        val metadataProvider = createMetadataProvider(provider)
+
         val service =
             com.mangafetcher.downloader.application
-                .MangaDownloadService()
+                .MangaDownloadService(
+                    downloadProvider = downloadProvider,
+                    metadataProvider = metadataProvider
+                )
 
         return try {
             val request =
@@ -122,6 +135,35 @@ class DownloadCommand : Callable<Int> {
         } catch (e: Exception) {
             System.err.println("Error: ${e.message}")
             1
+        }
+    }
+
+    private fun createDownloadProvider(providerName: String): com.mangafetcher.downloader.domain.port.MangaDownloadProvider {
+        return when (providerName.lowercase()) {
+            "composite" -> com.mangafetcher.downloader.infrastructure.download.CompositeDownloadProvider(
+                listOf(
+                    com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider(),
+                    com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider(),
+                )
+            )
+            "mangalivre" -> com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider()
+            "taosect" -> com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider()
+            else -> throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
+        }
+    }
+
+    private fun createMetadataProvider(providerName: String): com.mangafetcher.downloader.domain.model.MangaMetadataProvider {
+        return when (providerName.lowercase()) {
+            "composite" -> com.mangafetcher.downloader.infrastructure.metadata.CompositeMetadataProvider(
+                listOf(
+                    com.mangafetcher.downloader.infrastructure.metadata.MangaDexMetadataProvider(),
+                    com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataProvider(),
+                    com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider(),
+                )
+            )
+            "mangalivre" -> com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataProvider()
+            "taosect" -> com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider()
+            else -> throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
         }
     }
 }

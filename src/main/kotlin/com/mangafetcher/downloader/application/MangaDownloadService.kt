@@ -12,9 +12,11 @@ import com.mangafetcher.downloader.infrastructure.conversion.CbzConverter
 import com.mangafetcher.downloader.infrastructure.conversion.ComicInfoGenerator
 import com.mangafetcher.downloader.infrastructure.download.CompositeDownloadProvider
 import com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider
+import com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider
 import com.mangafetcher.downloader.infrastructure.metadata.CompositeMetadataProvider
 import com.mangafetcher.downloader.infrastructure.metadata.MangaDexMetadataProvider
 import com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataProvider
+import com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider
 import com.mangafetcher.downloader.infrastructure.persistence.SqliteDownloadRepository
 import com.mangafetcher.downloader.infrastructure.scraper.MangaDetails
 import java.io.File
@@ -24,6 +26,7 @@ class MangaDownloadService(
         CompositeDownloadProvider(
             listOf(
                 MangaLivreDownloadProvider(),
+                TaosectDownloadProvider(),
             ),
         ),
     private val converter: FileConverterPort = CbzConverter(),
@@ -32,6 +35,7 @@ class MangaDownloadService(
             listOf(
                 MangaDexMetadataProvider(),
                 MangaLivreMetadataProvider(),
+                TaosectMetadataProvider(),
             ),
         ),
 ) {

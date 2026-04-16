@@ -33,6 +33,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.xerial:sqlite-jdbc:3.45.3.0")
+    implementation("org.slf4j:slf4j-simple:2.0.9")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
