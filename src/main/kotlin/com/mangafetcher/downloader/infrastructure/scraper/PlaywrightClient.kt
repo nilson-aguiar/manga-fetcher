@@ -14,7 +14,16 @@ class PlaywrightClient : AutoCloseable {
     private val playwright: Playwright = Playwright.create()
     private val browser: Browser =
         playwright.chromium().launch(
-            BrowserType.LaunchOptions().setHeadless(true),
+            BrowserType.LaunchOptions()
+                .setHeadless(true)
+                .setArgs(
+                    listOf(
+                        "--no-sandbox",
+                        "--disable-setuid-sandbox",
+                        "--disable-dev-shm-usage",
+                        "--disable-gpu",
+                    ),
+                ),
         )
     private val context =
         browser.newContext(
