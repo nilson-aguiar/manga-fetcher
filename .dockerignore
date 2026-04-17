@@ -1,0 +1,27 @@
+# Build outputs (keep build/install for Docker)
+.gradle/
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Git
+.git/
+.gitignore
+
+# Tests
+.github/
+charts/
+
+# MacOS
+.DS_Store
+
+# Downloads
+downloads/
+*.cbz
+
+# Misc
+*.log
+*.tmp

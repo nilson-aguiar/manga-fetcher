@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  manga-fetcher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: manga-fetcher:latest
+    container_name: manga-fetcher
+    volumes:
+      # Mount downloads directory to persist downloaded manga
+      - ./downloads:/app/downloads
+    # Override the default command - example usage:
+    # command: ["search", "one punch man"]
+    # command: ["download", "one-punch-man", "1-3"]
+    environment:
+      - TZ=UTC
+    # For interactive use
+    stdin_open: true
+    tty: true
