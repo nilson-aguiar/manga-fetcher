@@ -19,14 +19,13 @@ import com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataPro
 import com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider
 import com.mangafetcher.downloader.infrastructure.persistence.SqliteDownloadRepository
 import com.mangafetcher.downloader.infrastructure.scraper.MangaDetails
+import com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient
 import org.slf4j.LoggerFactory
 import java.io.File
 
 class MangaDownloadService(
     // Share a single PlaywrightClient across all Taosect components to prevent browser crashes
-    private val sharedPlaywrightClient: com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient =
-        com.mangafetcher.downloader.infrastructure.scraper
-            .PlaywrightClient(),
+    private val sharedPlaywrightClient: PlaywrightClient = PlaywrightClient(),
     private val downloadProvider: MangaDownloadProvider =
         CompositeDownloadProvider(
             listOf(
@@ -174,7 +173,7 @@ class MangaDownloadService(
                         }
 
                         // Metadata fetching and generation - use actual manga title for better matching
-                        val metadata = getMetadata(details.title, cNum, volume)
+                        val metadata = getMetadata(request.mangaId, cNum, volume)
                         val metadataXml =
                             metadata?.let {
                                 ComicInfoGenerator.generate(it.copy(pageCount = images.size))

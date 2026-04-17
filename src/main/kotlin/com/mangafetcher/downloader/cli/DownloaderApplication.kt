@@ -1,7 +1,11 @@
 package com.mangafetcher.downloader.cli
 
+import com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient
 import picocli.CommandLine
 import picocli.CommandLine.Command
+import java.net.URI
+import java.nio.file.FileSystemNotFoundException
+import java.nio.file.FileSystems
 import java.util.concurrent.Callable
 import kotlin.system.exitProcess
 
@@ -168,13 +172,11 @@ class DownloadCommand : Callable<Int> {
                 .PlaywrightClient()
 
         val downloadProvider = createDownloadProvider(provider, sharedClient)
-        val metadataProvider = createMetadataProvider(provider, sharedClient)
 
         return com.mangafetcher.downloader.application
             .MangaDownloadService(
                 sharedPlaywrightClient = sharedClient,
                 downloadProvider = downloadProvider,
-                metadataProvider = metadataProvider,
             ).use { service ->
                 try {
                     val request =
@@ -203,7 +205,7 @@ class DownloadCommand : Callable<Int> {
 
     private fun createDownloadProvider(
         providerName: String,
-        sharedClient: com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient,
+        sharedClient: PlaywrightClient,
     ): com.mangafetcher.downloader.domain.port.MangaDownloadProvider =
         when (providerName.lowercase()) {
             "composite" -> {
@@ -234,53 +236,19 @@ class DownloadCommand : Callable<Int> {
             }
         }
 
-    private fun createMetadataProvider(
-        providerName: String,
-        sharedClient: com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient,
-    ): com.mangafetcher.downloader.domain.model.MangaMetadataProvider =
-        when (providerName.lowercase()) {
-            "composite" -> {
-                com.mangafetcher.downloader.infrastructure.metadata.CompositeMetadataProvider(
-                    listOf(
-                        com.mangafetcher.downloader.infrastructure.metadata
-                            .MangaDexMetadataProvider(),
-                        com.mangafetcher.downloader.infrastructure.metadata
-                            .MangaLivreMetadataProvider(),
-                        com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider(
-                            sharedPlaywrightClient = sharedClient,
-                        ),
-                    ),
-                )
-            }
-
-            "mangalivre" -> {
-                com.mangafetcher.downloader.infrastructure.metadata
-                    .MangaLivreMetadataProvider()
-            }
-
-            "taosect" -> {
-                com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider(
-                    sharedPlaywrightClient = sharedClient,
-                )
-            }
-
-            else -> {
-                throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
-            }
-        }
 }
 
 fun main(args: Array<String>) {
     try {
-        val uri = java.net.URI.create("resource:/")
+        val uri = URI.create("resource:/")
         try {
-            java.nio.file.FileSystems
+            FileSystems
                 .getFileSystem(uri)
-        } catch (e: java.nio.file.FileSystemNotFoundException) {
-            java.nio.file.FileSystems
+        } catch (_: FileSystemNotFoundException) {
+            FileSystems
                 .newFileSystem(uri, emptyMap<String, Any>())
         }
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         // Ignore initialization errors if we are not in a native image or it fails
     }
 
