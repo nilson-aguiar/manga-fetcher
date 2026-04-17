@@ -37,11 +37,27 @@ class MangaLivreScraper(
 ) : MangaScraperPort,
     MangaMetadataProvider,
     AutoCloseable {
+    private val logger = org.slf4j.LoggerFactory.getLogger(MangaLivreScraper::class.java)
+
     override fun getMetadata(
         title: String,
         chapter: String?,
         volume: String?,
-    ): MangaMetadata? = fetchMangaMetadata(title)?.copy(number = chapter, volume = volume)
+    ): MangaMetadata? {
+        logger.info("Searching MangaLivre for: {}", title)
+        return try {
+            val metadata = fetchMangaMetadata(title)?.copy(number = chapter, volume = volume)
+            if (metadata != null) {
+                logger.info("MangaLivre: Found match for '{}'", title)
+            } else {
+                logger.info("MangaLivre: No results found for '{}'", title)
+            }
+            metadata
+        } catch (e: Exception) {
+            logger.warn("MangaLivre: Error fetching metadata for '{}': {}", title, e.message)
+            null
+        }
+    }
 
     override fun search(title: String): List<MangaResult> {
         val html = playwrightClient.fetchPage("$baseUrl/?s=$title&post_type=wp-manga")
@@ -54,6 +70,7 @@ class MangaLivreScraper(
     }
 
     fun fetchMangaMetadata(mangaId: String): MangaMetadata? {
+        logger.debug("MangaLivre: Fetching from URL: {}/manga/{}/", baseUrl, mangaId)
         val html = playwrightClient.fetchPage("$baseUrl/manga/$mangaId/")
         return htmlParser.parseMangaMetadata(html, baseUrl, mangaId)
     }

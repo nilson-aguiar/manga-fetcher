@@ -16,17 +16,14 @@ import java.io.File
  */
 class TaosectDownloadProvider(
     private val baseUrl: String = "https://taosect.com",
-    private val scraper: TaosectScraper =
-        run {
-            val client = PlaywrightClient()
-            TaosectScraper(baseUrl, client, TaosectHtmlParser(), TaosectImageDownloader(client, TaosectHtmlParser()))
-        },
-    private val imageDownloader: TaosectImageDownloader =
-        run {
-            val client = PlaywrightClient()
-            TaosectImageDownloader(client, TaosectHtmlParser())
-        },
+    sharedPlaywrightClient: PlaywrightClient? = null,
 ) : MangaDownloadProvider {
+    // Ensure a single client is shared across scraper and imageDownloader
+    private val client: PlaywrightClient = sharedPlaywrightClient ?: PlaywrightClient()
+    private val isClientOwned = sharedPlaywrightClient == null
+    private val htmlParser = TaosectHtmlParser()
+    private val imageDownloader = TaosectImageDownloader(client, htmlParser)
+    private val scraper = TaosectScraper(baseUrl, client, htmlParser, imageDownloader)
 
     private val logger = LoggerFactory.getLogger(TaosectDownloadProvider::class.java)
 
@@ -50,7 +47,10 @@ class TaosectDownloadProvider(
         return scraper.fetchChapters(mangaId)
     }
 
-    private fun ensurePageCached(url: String, mangaId: String) {
+    private fun ensurePageCached(
+        url: String,
+        mangaId: String,
+    ) {
         val cached = pageCache[url]
         val now = System.currentTimeMillis()
 
@@ -80,6 +80,9 @@ class TaosectDownloadProvider(
     }
 
     override fun close() {
-        scraper.close()
+        // Only close the client if we own it (not shared)
+        if (isClientOwned) {
+            scraper.close()
+        }
     }
 }

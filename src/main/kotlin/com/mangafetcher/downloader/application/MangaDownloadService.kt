@@ -23,11 +23,15 @@ import org.slf4j.LoggerFactory
 import java.io.File
 
 class MangaDownloadService(
+    // Share a single PlaywrightClient across all Taosect components to prevent browser crashes
+    private val sharedPlaywrightClient: com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient =
+        com.mangafetcher.downloader.infrastructure.scraper
+            .PlaywrightClient(),
     private val downloadProvider: MangaDownloadProvider =
         CompositeDownloadProvider(
             listOf(
                 MangaLivreDownloadProvider(),
-                TaosectDownloadProvider(),
+                TaosectDownloadProvider(sharedPlaywrightClient = sharedPlaywrightClient),
             ),
         ),
     private val converter: FileConverterPort = CbzConverter(),
@@ -36,10 +40,10 @@ class MangaDownloadService(
             listOf(
                 MangaDexMetadataProvider(),
                 MangaLivreMetadataProvider(),
-                TaosectMetadataProvider(),
+                TaosectMetadataProvider(sharedPlaywrightClient = sharedPlaywrightClient),
             ),
         ),
-) {
+) : AutoCloseable {
     private val logger = LoggerFactory.getLogger(MangaDownloadService::class.java)
 
     fun downloadManga(request: DownloadRequest): DownloadResult {
@@ -77,7 +81,52 @@ class MangaDownloadService(
                     )
 
                 if (chaptersToDownload.isEmpty()) {
+                    val requested = request.chapterNumber ?: request.fromChapter ?: "unknown"
                     logger.warn("No chapters found matching the criteria")
+                    println("\n❌ Chapter '$requested' not found!")
+                    println("📚 Total chapters available: ${allChapters.size}")
+
+                    // Show some available options
+                    if (allChapters.isNotEmpty()) {
+                        val samplesToShow = 10
+                        println("\n📖 Available chapters:")
+
+                        // If we have many chapters, show first 5 and last 5
+                        val samples =
+                            if (allChapters.size > samplesToShow) {
+                                allChapters.take(5) + allChapters.takeLast(5)
+                            } else {
+                                allChapters
+                            }
+
+                        samples.forEach { chapter ->
+                            val volumeInfo = chapter.volume?.let { " (Vol. $it)" } ?: ""
+                            println("  • Chapter ${chapter.number}$volumeInfo")
+                        }
+
+                        if (allChapters.size > samplesToShow) {
+                            println("  ... and ${allChapters.size - samplesToShow} more")
+                        }
+
+                        // Show closest matches if user specified a chapter number
+                        request.fromChapter?.let { fromChapter ->
+                            val requestedNum = extractNumber(fromChapter)
+                            val closest =
+                                allChapters
+                                    .map { it to kotlin.math.abs(extractNumber(it.number) - requestedNum) }
+                                    .sortedBy { it.second }
+                                    .take(3)
+
+                            if (closest.isNotEmpty() && closest[0].second > 0) {
+                                println("\n💡 Closest matches:")
+                                closest.forEach { (chapter, _) ->
+                                    val volumeInfo = chapter.volume?.let { " (Vol. $it)" } ?: ""
+                                    println("  • Chapter ${chapter.number}$volumeInfo")
+                                }
+                            }
+                        }
+                    }
+
                     return DownloadResult(0, 0, 0)
                 }
 
@@ -124,8 +173,8 @@ class MangaDownloadService(
                             continue
                         }
 
-                        // Metadata fetching and generation
-                        val metadata = getMetadata(request.mangaId, cNum, volume)
+                        // Metadata fetching and generation - use actual manga title for better matching
+                        val metadata = getMetadata(details.title, cNum, volume)
                         val metadataXml =
                             metadata?.let {
                                 ComicInfoGenerator.generate(it.copy(pageCount = images.size))
@@ -226,5 +275,23 @@ class MangaDownloadService(
     private fun extractNumber(s: String): Double {
         val match = """(\d+(\.\d+)?)""".toRegex().find(s)
         return match?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
+    }
+
+    override fun close() {
+        try {
+            downloadProvider.close()
+        } catch (e: Exception) {
+            logger.warn("Error closing download provider: {}", e.message)
+        }
+        try {
+            (metadataProvider as? AutoCloseable)?.close()
+        } catch (e: Exception) {
+            logger.warn("Error closing metadata provider: {}", e.message)
+        }
+        try {
+            sharedPlaywrightClient.close()
+        } catch (e: Exception) {
+            logger.warn("Error closing shared Playwright client: {}", e.message)
+        }
     }
 }

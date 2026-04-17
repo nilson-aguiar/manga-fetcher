@@ -12,6 +12,7 @@ import java.net.URLEncoder
 class MangaDexMetadataProvider(
     private val client: ResilientHttpClient = ResilientHttpClient(rateLimitMs = 1000),
 ) : MangaMetadataProvider {
+    private val logger = org.slf4j.LoggerFactory.getLogger(MangaDexMetadataProvider::class.java)
     private val baseUrl = "https://api.mangadex.org"
 
     override fun getMetadata(
@@ -19,12 +20,21 @@ class MangaDexMetadataProvider(
         chapter: String?,
         volume: String?,
     ): MangaMetadata? {
+        logger.info("Searching MangaDex for: {}", title)
         return try {
             val encodedTitle = URLEncoder.encode(title, "UTF-8")
             val url = "$baseUrl/manga?title=$encodedTitle&limit=1&includes[]=author&includes[]=artist"
+            logger.debug("MangaDex API URL: {}", url)
             val response = client.get(url)
             val json = Json.parseToJsonElement(response).jsonObject
-            val data = json["data"]?.jsonArray?.firstOrNull()?.jsonObject ?: return null
+            val data = json["data"]?.jsonArray?.firstOrNull()?.jsonObject
+
+            if (data == null) {
+                logger.info("MangaDex: No results found for '{}'", title)
+                return null
+            }
+
+            logger.info("MangaDex: Found match for '{}'", title)
 
             val attributes = data["attributes"]?.jsonObject ?: return null
             val mTitle =
@@ -92,18 +102,22 @@ class MangaDexMetadataProvider(
                             ?.content
                     }.joinToString(", ")
 
-            MangaMetadata(
-                series = mTitle,
-                writer = authors.ifBlank { null },
-                penciller = artists.ifBlank { null },
-                genre = genres?.ifBlank { null },
-                summary = description?.ifBlank { null },
-                alternateSeries = altTitles?.ifBlank { null },
-                volume = volume?.ifBlank { null },
-                number = chapter?.ifBlank { null },
-                web = "https://mangadex.org/manga/${data["id"]?.jsonPrimitive?.content}",
-            )
+            val metadata =
+                MangaMetadata(
+                    series = mTitle,
+                    writer = authors.ifBlank { null },
+                    penciller = artists.ifBlank { null },
+                    genre = genres?.ifBlank { null },
+                    summary = description?.ifBlank { null },
+                    alternateSeries = altTitles?.ifBlank { null },
+                    volume = volume?.ifBlank { null },
+                    number = chapter?.ifBlank { null },
+                    web = "https://mangadex.org/manga/${data["id"]?.jsonPrimitive?.content}",
+                )
+            logger.info("MangaDex: Successfully retrieved metadata for '{}'", mTitle)
+            metadata
         } catch (e: Exception) {
+            logger.warn("MangaDex: Error fetching metadata for '{}': {}", title, e.message)
             null
         }
     }

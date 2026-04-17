@@ -15,8 +15,9 @@ class TaosectHtmlParserTest {
 
     @Test
     fun `should parse manga details from HTML`() {
-        val html = File("/tmp/taosect-manga.html").takeIf { it.exists() }?.readText()
-            ?: return // Skip if fixture doesn't exist
+        val html =
+            File("/tmp/taosect-manga.html").takeIf { it.exists() }?.readText()
+                ?: return // Skip if fixture doesn't exist
 
         val details = parser.parseMangaDetails(html)
 
@@ -30,8 +31,9 @@ class TaosectHtmlParserTest {
 
     @Test
     fun `should parse chapters from HTML`() {
-        val html = File("/tmp/taosect-manga.html").takeIf { it.exists() }?.readText()
-            ?: return // Skip if fixture doesn't exist
+        val html =
+            File("/tmp/taosect-manga.html").takeIf { it.exists() }?.readText()
+                ?: return // Skip if fixture doesn't exist
 
         val chapters = parser.parseChapters(html)
 
@@ -46,8 +48,9 @@ class TaosectHtmlParserTest {
 
     @Test
     fun `should parse manga metadata from HTML`() {
-        val html = File("/tmp/taosect-manga.html").takeIf { it.exists() }?.readText()
-            ?: return // Skip if fixture doesn't exist
+        val html =
+            File("/tmp/taosect-manga.html").takeIf { it.exists() }?.readText()
+                ?: return // Skip if fixture doesn't exist
 
         val metadata = parser.parseMangaMetadata(html, "https://taosect.com", "one-punch-man")
 
@@ -63,8 +66,9 @@ class TaosectHtmlParserTest {
 
     @Test
     fun `should extract image URLs from chapter HTML`() {
-        val html = File("/tmp/taosect-chapter.html").takeIf { it.exists() }?.readText()
-            ?: return // Skip if fixture doesn't exist
+        val html =
+            File("/tmp/taosect-chapter.html").takeIf { it.exists() }?.readText()
+                ?: return // Skip if fixture doesn't exist
 
         val imageUrls = parser.extractImageUrls(html)
 

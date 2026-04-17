@@ -101,7 +101,8 @@ class CompositeMetadataProviderTest {
         }
     }
 
-    private class CloseableTestProvider : MangaMetadataProvider,
+    private class CloseableTestProvider :
+        MangaMetadataProvider,
         AutoCloseable {
         var closed = false
 

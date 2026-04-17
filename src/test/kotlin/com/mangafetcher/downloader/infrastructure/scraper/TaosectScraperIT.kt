@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
  * These tests make real HTTP requests to Taosect and are disabled by default.
  * Set ENABLE_INTEGRATION_TESTS=true to run them.
  */
-//@EnabledIfEnvironmentVariable(named = "ENABLE_INTEGRATION_TESTS", matches = "true")
+// @EnabledIfEnvironmentVariable(named = "ENABLE_INTEGRATION_TESTS", matches = "true")
 class TaosectScraperIT {
     @Test
     fun `should fetch manga details for One Punch Man`() {
@@ -46,28 +46,38 @@ class TaosectScraperIT {
 
             // Verify no chapter has a URL as its number or null/empty values
             chapters.forEach { chapter ->
-                assertTrue(!chapter.number.contains("://"),
-                    "Chapter number should not be a URL: ${chapter.number}")
-                assertTrue(chapter.number.isNotBlank(),
-                    "Chapter number should not be blank")
-                assertTrue(chapter.id.isNotBlank(),
-                    "Chapter ID should not be blank")
+                assertTrue(
+                    !chapter.number.contains("://"),
+                    "Chapter number should not be a URL: ${chapter.number}",
+                )
+                assertTrue(
+                    chapter.number.isNotBlank(),
+                    "Chapter number should not be blank",
+                )
+                assertTrue(
+                    chapter.id.isNotBlank(),
+                    "Chapter ID should not be blank",
+                )
             }
 
             // Verify chapters are sorted (check some known sequences)
             val chapter72Index = chapters.indexOfFirst { it.number.startsWith("72") && !it.number.contains(".") }
             val chapter72_5Index = chapters.indexOfFirst { it.number == "72.5" }
             if (chapter72Index >= 0 && chapter72_5Index >= 0) {
-                assertTrue(chapter72_5Index > chapter72Index,
-                    "Chapter 72.5 should come after chapter 72")
+                assertTrue(
+                    chapter72_5Index > chapter72Index,
+                    "Chapter 72.5 should come after chapter 72",
+                )
             }
 
             // Check that chapter 128 comes before chapter 195
             val chapter128Index = chapters.indexOfFirst { it.number == "128" }
             val chapter195Index = chapters.indexOfFirst { it.number.startsWith("195") }
             if (chapter128Index >= 0 && chapter195Index >= 0) {
-                assertTrue(chapter128Index < chapter195Index,
-                    "Chapter 128 should come before chapter 195")
+                assertTrue(
+                    chapter128Index < chapter195Index,
+                    "Chapter 128 should come before chapter 195",
+                )
             }
 
             println(chapters)
@@ -101,7 +111,10 @@ class TaosectScraperIT {
     @Test
     fun `should download chapter images for One Punch Man chapter 1`() {
         TaosectScraper().use { scraper ->
-            val tempDir = kotlin.io.path.createTempDirectory("taosect-test").toFile()
+            val tempDir =
+                kotlin.io.path
+                    .createTempDirectory("taosect-test")
+                    .toFile()
 
             try {
                 val images = scraper.downloadImages("one-punch-man", "cap-tulo-01", tempDir)

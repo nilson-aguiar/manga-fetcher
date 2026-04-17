@@ -135,11 +135,9 @@ class MangaDownloadServicePortsTest {
     fun `skips chapters when images fail to download`() {
         val mockProvider =
             object : MangaDownloadProvider {
-                override fun fetchChapters(mangaId: String) =
-                    listOf(ChapterResult("1", "ch-1", null))
+                override fun fetchChapters(mangaId: String) = listOf(ChapterResult("1", "ch-1", null))
 
-                override fun fetchMangaDetails(mangaId: String) =
-                    MangaDetails("Test Manga", "Author", "Artist", "Desc", "Tags", "")
+                override fun fetchMangaDetails(mangaId: String) = MangaDetails("Test Manga", "Author", "Artist", "Desc", "Tags", "")
 
                 override fun downloadChapterImages(
                     mangaId: String,
@@ -203,8 +201,7 @@ class MangaDownloadServicePortsTest {
                         ChapterResult("3", "ch-3", null),
                     )
 
-                override fun fetchMangaDetails(mangaId: String) =
-                    MangaDetails("Test Manga", "Author", "Artist", "Desc", "Tags", "")
+                override fun fetchMangaDetails(mangaId: String) = MangaDetails("Test Manga", "Author", "Artist", "Desc", "Tags", "")
 
                 override fun downloadChapterImages(
                     mangaId: String,

@@ -24,16 +24,30 @@ class TaosectScraper(
 ) : MangaScraperPort,
     MangaMetadataProvider,
     AutoCloseable {
-
     private val logger = LoggerFactory.getLogger(TaosectScraper::class.java)
 
     // Cache HTML for manga pages to avoid fetching twice
     private val htmlCache = mutableMapOf<String, String>()
+
     override fun getMetadata(
         title: String,
         chapter: String?,
         volume: String?,
-    ): MangaMetadata? = fetchMangaMetadata(title)?.copy(number = chapter, volume = volume)
+    ): MangaMetadata? {
+        logger.info("Searching Taosect for: {}", title)
+        return try {
+            val metadata = fetchMangaMetadata(title)?.copy(number = chapter, volume = volume)
+            if (metadata != null) {
+                logger.info("Taosect: Found match for '{}'", title)
+            } else {
+                logger.info("Taosect: No results found for '{}'", title)
+            }
+            metadata
+        } catch (e: Exception) {
+            logger.warn("Taosect: Error fetching metadata for '{}': {}", title, e.message)
+            null
+        }
+    }
 
     override fun search(title: String): List<MangaResult> {
         logger.info("Searching for: {}", title)
@@ -47,24 +61,26 @@ class TaosectScraper(
         logger.info("Fetching chapters for manga: {}", mangaId)
         val url = "$baseUrl/manga/$mangaId/"
 
-        val html = if (htmlCache.containsKey(url)) {
-            logger.debug("Using cached HTML for: {}", url)
-            htmlCache[url]!!
-        } else {
-            logger.debug("Loading page: {}", url)
-            val fetchedHtml = playwrightClient.fetchPage(url)
-            htmlCache[url] = fetchedHtml
-            fetchedHtml
-        }
+        val html =
+            if (htmlCache.containsKey(url)) {
+                logger.debug("Using cached HTML for: {}", url)
+                htmlCache[url]!!
+            } else {
+                logger.debug("Loading page: {}", url)
+                val fetchedHtml = playwrightClient.fetchPage(url)
+                htmlCache[url] = fetchedHtml
+                fetchedHtml
+            }
 
         logger.debug("Page HTML received, length: {} bytes", html.length)
         logger.debug("Calling HTML parser to extract chapters...")
-        val chapters = try {
-            htmlParser.parseChapters(html)
-        } catch (e: Exception) {
-            logger.error("Error parsing chapters: {}", e.message, e)
-            throw e
-        }
+        val chapters =
+            try {
+                htmlParser.parseChapters(html)
+            } catch (e: Exception) {
+                logger.error("Error parsing chapters: {}", e.message, e)
+                throw e
+            }
         logger.info("Found {} chapters available", chapters.size)
 
         // Sort chapters by number
@@ -79,10 +95,11 @@ class TaosectScraper(
      */
     private fun parseChapterNumber(chapterNumber: String): Double {
         // Extract the numeric part before any version suffix (v2, v3, etc.) or text
-        val numericPart = chapterNumber
-            .replace(Regex("[vV]\\d+"), "") // Remove version suffixes like v2, V3
-            .replace(Regex("\\s+e\\s+.*"), "") // Remove " e ..." parts
-            .trim()
+        val numericPart =
+            chapterNumber
+                .replace(Regex("[vV]\\d+"), "") // Remove version suffixes like v2, V3
+                .replace(Regex("\\s+e\\s+.*"), "") // Remove " e ..." parts
+                .trim()
 
         return numericPart.toDoubleOrNull() ?: 0.0
     }
@@ -91,15 +108,16 @@ class TaosectScraper(
         logger.info("Fetching metadata for: {}", mangaId)
         val url = "$baseUrl/manga/$mangaId/"
 
-        val html = if (htmlCache.containsKey(url)) {
-            logger.debug("Using cached HTML for: {}", url)
-            htmlCache[url]!!
-        } else {
-            logger.debug("Loading page: {}", url)
-            val fetchedHtml = playwrightClient.fetchPage(url)
-            htmlCache[url] = fetchedHtml
-            fetchedHtml
-        }
+        val html =
+            if (htmlCache.containsKey(url)) {
+                logger.debug("Using cached HTML for: {}", url)
+                htmlCache[url]!!
+            } else {
+                logger.debug("Loading page: {}", url)
+                val fetchedHtml = playwrightClient.fetchPage(url)
+                htmlCache[url] = fetchedHtml
+                fetchedHtml
+            }
 
         return htmlParser.parseMangaMetadata(html, baseUrl, mangaId)
     }
@@ -108,15 +126,16 @@ class TaosectScraper(
         logger.info("Fetching manga details for: {}", mangaId)
         val url = "$baseUrl/manga/$mangaId/"
 
-        val html = if (htmlCache.containsKey(url)) {
-            logger.debug("Using cached HTML for: {}", url)
-            htmlCache[url]!!
-        } else {
-            logger.debug("Loading page: {}", url)
-            val fetchedHtml = playwrightClient.fetchPage(url)
-            htmlCache[url] = fetchedHtml
-            fetchedHtml
-        }
+        val html =
+            if (htmlCache.containsKey(url)) {
+                logger.debug("Using cached HTML for: {}", url)
+                htmlCache[url]!!
+            } else {
+                logger.debug("Loading page: {}", url)
+                val fetchedHtml = playwrightClient.fetchPage(url)
+                htmlCache[url] = fetchedHtml
+                fetchedHtml
+            }
 
         val details = htmlParser.parseMangaDetails(html)
         logger.info("Manga title: {}", details.title)

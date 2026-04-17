@@ -11,32 +11,60 @@ import org.slf4j.LoggerFactory
  * Manages Playwright browser lifecycle and provides page fetching capabilities.
  * Handles browser initialization, page navigation, and resource cleanup.
  */
-class PlaywrightClient : AutoCloseable {
-
+class PlaywrightClient(
+    useFirefox: Boolean? = null,
+) : AutoCloseable {
     private val logger = LoggerFactory.getLogger(PlaywrightClient::class.java)
     private val playwright: Playwright = Playwright.create()
+
+    // Allow override via environment variable: PLAYWRIGHT_BROWSER=firefox
+    private val shouldUseFirefox = useFirefox ?: (System.getenv("PLAYWRIGHT_BROWSER")?.lowercase() == "firefox")
+
     private val browser: Browser =
-        playwright.chromium().launch(
-            BrowserType.LaunchOptions()
-                .setHeadless(true)
-                .setArgs(
-                    listOf(
-                        "--no-sandbox",
-                        "--disable-setuid-sandbox",
-                        "--disable-dev-shm-usage",
-                        "--disable-gpu",
-                        "--disable-software-rasterizer",
-                        "--disable-extensions",
-                        "--disable-background-timer-throttling",
-                        "--disable-backgrounding-occluded-windows",
-                        "--disable-renderer-backgrounding",
-                        "--disable-blink-features=AutomationControlled",
-                        "--disable-features=VizDisplayCompositor",
-                        "--disable-web-security",
-                        "--disable-features=IsolateOrigins,site-per-process",
-                    ),
-                ).setTimeout(60000.0),
-        )
+        if (shouldUseFirefox) {
+            logger.info("Using Firefox browser")
+            playwright.firefox().launch(
+                BrowserType
+                    .LaunchOptions()
+                    .setHeadless(true)
+                    .setTimeout(60000.0),
+            )
+        } else {
+            logger.info("Using Chromium browser")
+            playwright.chromium().launch(
+                BrowserType
+                    .LaunchOptions()
+                    .setHeadless(true)
+                    .setArgs(
+                        listOf(
+                            "--no-sandbox",
+                            "--disable-setuid-sandbox",
+                            "--disable-dev-shm-usage",
+                            "--disable-gpu",
+                            "--disable-software-rasterizer",
+                            "--disable-extensions",
+                            "--disable-background-timer-throttling",
+                            "--disable-backgrounding-occluded-windows",
+                            "--disable-renderer-backgrounding",
+                            "--disable-blink-features=AutomationControlled",
+                            "--disable-web-security",
+                            "--disable-features=IsolateOrigins,site-per-process,VizDisplayCompositor",
+                            // Stability improvements to prevent crashes
+                            "--no-zygote",
+                            "--single-process",
+                            "--disable-accelerated-2d-canvas",
+                            "--disable-crash-reporter",
+                            "--disable-site-isolation-trials",
+                            "--disable-features=AudioServiceOutOfProcess",
+                            "--js-flags=--max-old-space-size=512",
+                            // Additional memory and performance settings
+                            "--disable-canvas-aa",
+                            "--disable-2d-canvas-clip-aa",
+                            "--disable-gl-drawing-for-tests",
+                        ),
+                    ).setTimeout(60000.0),
+            )
+        }
     private val context =
         browser.newContext(
             Browser.NewContextOptions().setUserAgent(
@@ -59,36 +87,15 @@ class PlaywrightClient : AutoCloseable {
             page.waitForLoadState(LoadState.DOMCONTENTLOADED)
             logger.debug("Page loaded successfully (DOMCONTENTLOADED)")
 
-            // Wait a bit more for any dynamic content
-            try {
-                page.waitForLoadState(LoadState.NETWORKIDLE, Page.WaitForLoadStateOptions().setTimeout(5000.0))
-                logger.debug("Network idle")
-            } catch (e: Exception) {
-                logger.debug("Network idle timeout (may be normal): {}", e.message)
-            }
-
-            logger.debug("Extracting page content using page.evaluate()...")
-
-            // Use evaluate to get the HTML instead of page.content()
-            // page.content() has been observed to hang on subsequent calls in Docker
-            // Try multiple methods with shorter timeout
-            val content = try {
-                // Method 1: Try documentElement.outerHTML with a reasonable wait
-                logger.debug("Trying method 1: documentElement.outerHTML")
-                page.evaluate("() => document.documentElement.outerHTML") as String
-            } catch (e: Exception) {
-                logger.warn("Method 1 failed: {}, trying method 2", e.message)
+            // Extract content IMMEDIATELY after DOM loads, before any heavy JS can crash the page
+            logger.debug("Extracting content immediately after DOM load...")
+            val content =
                 try {
-                    // Method 2: Try body.parentElement.outerHTML
-                    logger.debug("Trying method 2: body.parentElement.outerHTML")
-                    page.evaluate("() => document.body.parentElement.outerHTML") as String
-                } catch (e2: Exception) {
-                    logger.warn("Method 2 failed: {}, trying method 3 (page.content)", e2.message)
-                    // Method 3: Fall back to page.content() as last resort
-                    logger.debug("Trying method 3: page.content()")
                     page.content()
+                } catch (e: Exception) {
+                    logger.warn("Immediate page.content() failed: {}, trying evaluate", e.message)
+                    page.evaluate("() => document.documentElement.outerHTML") as String
                 }
-            }
 
             logger.debug("Content extracted, length: {} bytes", content.length)
             return content

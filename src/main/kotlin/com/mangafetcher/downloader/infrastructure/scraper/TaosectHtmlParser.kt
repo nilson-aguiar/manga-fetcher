@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory
  * Parses search results, chapter listings, manga details, and chapter images.
  */
 class TaosectHtmlParser {
-
     private val logger = LoggerFactory.getLogger(TaosectHtmlParser::class.java)
+
     /**
      * Parses search results HTML and extracts manga listings.
      * Taosect uses WordPress-based manga theme with standard post listings.
@@ -34,12 +34,13 @@ class TaosectHtmlParser {
     fun parseChapters(html: String): List<ChapterResult> {
         logger.debug("parseChapters() called, HTML length: {} bytes", html.length)
         logger.debug("Starting Jsoup.parse()...")
-        val doc = try {
-            Jsoup.parse(html)
-        } catch (e: Exception) {
-            logger.error("Jsoup.parse() failed: {}", e.message, e)
-            throw e
-        }
+        val doc =
+            try {
+                Jsoup.parse(html)
+            } catch (e: Exception) {
+                logger.error("Jsoup.parse() failed: {}", e.message, e)
+                throw e
+            }
         logger.debug("Jsoup.parse() completed successfully")
         // Chapter links are in the format: /leitor-online/projeto/{manga-id}/cap-tulo-{number}/
         val chapters = mutableListOf<ChapterResult>()
@@ -52,16 +53,19 @@ class TaosectHtmlParser {
             val href = element.attr("href")
 
             // Extract chapterId from href - handle both relative and absolute URLs
-            val chapterId = if (href.contains("/leitor-online/projeto/")) {
-                // Extract from URL like: /leitor-online/projeto/{manga-id}/{chapter-id}/ or full URL
-                val pathAfterProjeto = href.substringAfter("/leitor-online/projeto/")
-                    .removeSuffix("/")
-                    .substringBefore("#") // Remove anchor fragments
-                    .substringAfter("/") // Get chapter-id part after manga-id
-                pathAfterProjeto
-            } else {
-                href.substringAfterLast("/").removeSuffix("/").substringBefore("#")
-            }
+            val chapterId =
+                if (href.contains("/leitor-online/projeto/")) {
+                    // Extract from URL like: /leitor-online/projeto/{manga-id}/{chapter-id}/ or full URL
+                    val pathAfterProjeto =
+                        href
+                            .substringAfter("/leitor-online/projeto/")
+                            .removeSuffix("/")
+                            .substringBefore("#") // Remove anchor fragments
+                            .substringAfter("/") // Get chapter-id part after manga-id
+                    pathAfterProjeto
+                } else {
+                    href.substringAfterLast("/").removeSuffix("/").substringBefore("#")
+                }
 
             // Skip invalid chapter IDs
             if (chapterId.isEmpty() || chapterId.contains("://")) {
@@ -69,22 +73,29 @@ class TaosectHtmlParser {
             }
 
             // Extract chapter number from the chapterId (most reliable source)
-            val number = when {
-                // Extract from chapterId with standard format
-                chapterId.contains("cap-tulo-") -> chapterId.substringAfter("cap-tulo-").replace("-", ".")
-                // For non-standard IDs, try to extract from element text
-                else -> {
-                    val text = element.text().trim()
-                    when {
-                        text.contains("Capítulo", ignoreCase = true) -> text.substringAfter("Capítulo").trim()
-                        text.contains("Cap", ignoreCase = true) -> text.substringAfter("Cap").trim()
-                        // Only use text if it doesn't look like a URL
-                        !text.contains("://") && text.isNotBlank() -> text
-                        // Last resort: use the chapterId itself if it looks numeric-ish
-                        else -> chapterId
+            val number =
+                when {
+                    // Extract from chapterId with standard format
+                    chapterId.contains("cap-tulo-") -> {
+                        chapterId.substringAfter("cap-tulo-").replace("-", ".")
+                    }
+
+                    // For non-standard IDs, try to extract from element text
+                    else -> {
+                        val text = element.text().trim()
+                        when {
+                            text.contains("Capítulo", ignoreCase = true) -> text.substringAfter("Capítulo").trim()
+
+                            text.contains("Cap", ignoreCase = true) -> text.substringAfter("Cap").trim()
+
+                            // Only use text if it doesn't look like a URL
+                            !text.contains("://") && text.isNotBlank() -> text
+
+                            // Last resort: use the chapterId itself if it looks numeric-ish
+                            else -> chapterId
+                        }
                     }
                 }
-            }
 
             // Final validation: skip if number looks like a URL
             if (number.contains("://")) {
@@ -120,7 +131,12 @@ class TaosectHtmlParser {
 
         table.forEach { row ->
             val header = row.select("td strong").text().trim()
-            val value = row.select("td").getOrNull(1)?.text()?.trim() ?: ""
+            val value =
+                row
+                    .select("td")
+                    .getOrNull(1)
+                    ?.text()
+                    ?.trim() ?: ""
 
             when {
                 header.contains("Arte", ignoreCase = true) -> artists = value
@@ -129,8 +145,11 @@ class TaosectHtmlParser {
         }
 
         // Description is in a td with colspan=2 inside the table
-        description = doc.select("table.tabela-projeto td[colspan='2'].tabela-projeto-conteudo p")
-            .text().trim()
+        description =
+            doc
+                .select("table.tabela-projeto td[colspan='2'].tabela-projeto-conteudo p")
+                .text()
+                .trim()
 
         // Tags/genres are links with class "link_genero"
         tags = doc.select("a.link_genero").joinToString(", ") { it.text().trim() }
@@ -161,7 +180,12 @@ class TaosectHtmlParser {
 
         table.forEach { row ->
             val header = row.select("td strong").text().trim()
-            val value = row.select("td").getOrNull(1)?.text()?.trim() ?: ""
+            val value =
+                row
+                    .select("td")
+                    .getOrNull(1)
+                    ?.text()
+                    ?.trim() ?: ""
 
             when {
                 header.contains("Arte", ignoreCase = true) -> penciller = value
@@ -169,8 +193,11 @@ class TaosectHtmlParser {
             }
         }
 
-        val summary = doc.select("table.tabela-projeto td[colspan='2'].tabela-projeto-conteudo p")
-            .text().trim()
+        val summary =
+            doc
+                .select("table.tabela-projeto td[colspan='2'].tabela-projeto-conteudo p")
+                .text()
+                .trim()
         val genres = doc.select("a.link_genero").joinToString(",") { it.text().trim() }
         val alternate = doc.select("h3.titulo-original").text().trim()
 

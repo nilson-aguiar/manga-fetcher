@@ -99,7 +99,8 @@ class CompositeMetadataProviderIT {
         var provider2Closed = false
 
         val trackableProvider1 =
-            object : com.mangafetcher.downloader.domain.model.MangaMetadataProvider,
+            object :
+                com.mangafetcher.downloader.domain.model.MangaMetadataProvider,
                 AutoCloseable {
                 override fun getMetadata(
                     title: String,
@@ -113,7 +114,8 @@ class CompositeMetadataProviderIT {
             }
 
         val trackableProvider2 =
-            object : com.mangafetcher.downloader.domain.model.MangaMetadataProvider,
+            object :
+                com.mangafetcher.downloader.domain.model.MangaMetadataProvider,
                 AutoCloseable {
                 override fun getMetadata(
                     title: String,

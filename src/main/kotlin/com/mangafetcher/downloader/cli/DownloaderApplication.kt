@@ -20,7 +20,7 @@ class DownloaderApplication : Callable<Int> {
     @CommandLine.Option(
         names = ["--log-level"],
         description = ["Log level: trace, debug, info, warn, error (default: info)"],
-        defaultValue = "info"
+        defaultValue = "info",
     )
     var logLevel: String = "info"
 
@@ -89,7 +89,7 @@ class SearchCommand : Callable<Int> {
     @CommandLine.Option(
         names = ["-p", "--provider"],
         description = ["Search provider to use: mangalivre, taosect"],
-        defaultValue = "mangalivre"
+        defaultValue = "mangalivre",
     )
     lateinit var provider: String
 
@@ -114,13 +114,22 @@ class SearchCommand : Callable<Int> {
         }
     }
 
-    private fun createScraper(providerName: String): com.mangafetcher.downloader.domain.port.MangaScraperPort {
-        return when (providerName.lowercase()) {
-            "mangalivre" -> com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper()
-            "taosect" -> com.mangafetcher.downloader.infrastructure.scraper.TaosectScraper()
-            else -> throw IllegalArgumentException("Unknown provider: $providerName. Valid options: mangalivre, taosect")
+    private fun createScraper(providerName: String): com.mangafetcher.downloader.domain.port.MangaScraperPort =
+        when (providerName.lowercase()) {
+            "mangalivre" -> {
+                com.mangafetcher.downloader.infrastructure.scraper
+                    .MangaLivreScraper()
+            }
+
+            "taosect" -> {
+                com.mangafetcher.downloader.infrastructure.scraper
+                    .TaosectScraper()
+            }
+
+            else -> {
+                throw IllegalArgumentException("Unknown provider: $providerName. Valid options: mangalivre, taosect")
+            }
         }
-    }
 }
 
 @Command(name = "download", description = ["Download chapters of a manga"])
@@ -148,73 +157,117 @@ class DownloadCommand : Callable<Int> {
     @CommandLine.Option(
         names = ["-p", "--provider"],
         description = ["Download provider to use: composite, mangalivre, taosect"],
-        defaultValue = "composite"
+        defaultValue = "composite",
     )
     lateinit var provider: String
 
     override fun call(): Int {
-        val downloadProvider = createDownloadProvider(provider)
-        val metadataProvider = createMetadataProvider(provider)
+        // Create shared PlaywrightClient for Taosect to prevent browser crashes
+        val sharedClient =
+            com.mangafetcher.downloader.infrastructure.scraper
+                .PlaywrightClient()
 
-        val service =
-            com.mangafetcher.downloader.application
-                .MangaDownloadService(
-                    downloadProvider = downloadProvider,
-                    metadataProvider = metadataProvider
-                )
+        val downloadProvider = createDownloadProvider(provider, sharedClient)
+        val metadataProvider = createMetadataProvider(provider, sharedClient)
 
-        return try {
-            val request =
-                com.mangafetcher.downloader.domain.model.DownloadRequest(
-                    mangaId = mangaId,
-                    outputDir = java.io.File(output),
-                    chapterNumber = selection.chapterNumber,
-                    fromChapter = selection.fromChapter,
-                    withVolume = withVolume,
-                )
+        return com.mangafetcher.downloader.application
+            .MangaDownloadService(
+                sharedPlaywrightClient = sharedClient,
+                downloadProvider = downloadProvider,
+                metadataProvider = metadataProvider,
+            ).use { service ->
+                try {
+                    val request =
+                        com.mangafetcher.downloader.domain.model.DownloadRequest(
+                            mangaId = mangaId,
+                            outputDir = java.io.File(output),
+                            chapterNumber = selection.chapterNumber,
+                            fromChapter = selection.fromChapter,
+                            withVolume = withVolume,
+                        )
 
-            val result = service.downloadManga(request)
+                    val result = service.downloadManga(request)
 
-            println("\n=== Download Summary ===")
-            println("Successfully downloaded: ${result.successCount} chapters")
-            println("Skipped (already exists): ${result.skippedCount} chapters")
-            println("Failed: ${result.failedCount} chapters")
+                    println("\n=== Download Summary ===")
+                    println("Successfully downloaded: ${result.successCount} chapters")
+                    println("Skipped (already exists): ${result.skippedCount} chapters")
+                    println("Failed: ${result.failedCount} chapters")
 
-            0
-        } catch (e: Exception) {
-            System.err.println("Error: ${e.message}")
-            1
-        }
+                    0
+                } catch (e: Exception) {
+                    System.err.println("Error: ${e.message}")
+                    1
+                }
+            }
     }
 
-    private fun createDownloadProvider(providerName: String): com.mangafetcher.downloader.domain.port.MangaDownloadProvider {
-        return when (providerName.lowercase()) {
-            "composite" -> com.mangafetcher.downloader.infrastructure.download.CompositeDownloadProvider(
-                listOf(
-                    com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider(),
-                    com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider(),
+    private fun createDownloadProvider(
+        providerName: String,
+        sharedClient: com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient,
+    ): com.mangafetcher.downloader.domain.port.MangaDownloadProvider =
+        when (providerName.lowercase()) {
+            "composite" -> {
+                com.mangafetcher.downloader.infrastructure.download.CompositeDownloadProvider(
+                    listOf(
+                        com.mangafetcher.downloader.infrastructure.download
+                            .MangaLivreDownloadProvider(),
+                        com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider(
+                            sharedPlaywrightClient = sharedClient,
+                        ),
+                    ),
                 )
-            )
-            "mangalivre" -> com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider()
-            "taosect" -> com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider()
-            else -> throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
-        }
-    }
+            }
 
-    private fun createMetadataProvider(providerName: String): com.mangafetcher.downloader.domain.model.MangaMetadataProvider {
-        return when (providerName.lowercase()) {
-            "composite" -> com.mangafetcher.downloader.infrastructure.metadata.CompositeMetadataProvider(
-                listOf(
-                    com.mangafetcher.downloader.infrastructure.metadata.MangaDexMetadataProvider(),
-                    com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataProvider(),
-                    com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider(),
+            "mangalivre" -> {
+                com.mangafetcher.downloader.infrastructure.download
+                    .MangaLivreDownloadProvider()
+            }
+
+            "taosect" -> {
+                com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider(
+                    sharedPlaywrightClient = sharedClient,
                 )
-            )
-            "mangalivre" -> com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataProvider()
-            "taosect" -> com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider()
-            else -> throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
+            }
+
+            else -> {
+                throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
+            }
         }
-    }
+
+    private fun createMetadataProvider(
+        providerName: String,
+        sharedClient: com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient,
+    ): com.mangafetcher.downloader.domain.model.MangaMetadataProvider =
+        when (providerName.lowercase()) {
+            "composite" -> {
+                com.mangafetcher.downloader.infrastructure.metadata.CompositeMetadataProvider(
+                    listOf(
+                        com.mangafetcher.downloader.infrastructure.metadata
+                            .MangaDexMetadataProvider(),
+                        com.mangafetcher.downloader.infrastructure.metadata
+                            .MangaLivreMetadataProvider(),
+                        com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider(
+                            sharedPlaywrightClient = sharedClient,
+                        ),
+                    ),
+                )
+            }
+
+            "mangalivre" -> {
+                com.mangafetcher.downloader.infrastructure.metadata
+                    .MangaLivreMetadataProvider()
+            }
+
+            "taosect" -> {
+                com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider(
+                    sharedPlaywrightClient = sharedClient,
+                )
+            }
+
+            else -> {
+                throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
+            }
+        }
 }
 
 fun main(args: Array<String>) {
@@ -232,9 +285,10 @@ fun main(args: Array<String>) {
     }
 
     // Extract log level from args before creating CommandLine (to configure logging early)
-    val logLevel = args.indexOf("--log-level").let { index ->
-        if (index >= 0 && index + 1 < args.size) args[index + 1] else "info"
-    }
+    val logLevel =
+        args.indexOf("--log-level").let { index ->
+            if (index >= 0 && index + 1 < args.size) args[index + 1] else "info"
+        }
     DownloaderApplication.configureLogging(logLevel)
 
     exitProcess(CommandLine(DownloaderApplication()).execute(*args))

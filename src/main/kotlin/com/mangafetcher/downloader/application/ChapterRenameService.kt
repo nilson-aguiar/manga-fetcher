@@ -10,6 +10,7 @@ class ChapterRenameService(
     private val scraper: MangaScraperPort = MangaLivreScraper(),
 ) {
     private val logger = LoggerFactory.getLogger(ChapterRenameService::class.java)
+
     fun renameChapters(
         mangaId: String,
         outputDir: File,
