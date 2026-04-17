@@ -1,8 +1,18 @@
 package com.mangafetcher.downloader.cli
 
+import com.mangafetcher.downloader.application.ChapterRenameService
+import com.mangafetcher.downloader.application.MangaSearchService
+import com.mangafetcher.downloader.domain.model.DownloadRequest
+import com.mangafetcher.downloader.domain.port.MangaDownloadProvider
+import com.mangafetcher.downloader.domain.port.MangaScraperPort
+import com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider
+import com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider
+import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
 import com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient
+import com.mangafetcher.downloader.infrastructure.scraper.TaosectScraper
 import picocli.CommandLine
 import picocli.CommandLine.Command
+import java.io.File
 import java.net.URI
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
@@ -66,12 +76,10 @@ class RenameCommand : Callable<Int> {
     lateinit var output: String
 
     override fun call(): Int {
-        val service =
-            com.mangafetcher.downloader.application
-                .ChapterRenameService()
+        val service = ChapterRenameService()
 
         return try {
-            val outputDir = java.io.File(output)
+            val outputDir = File(output)
             val renamedCount = service.renameChapters(mangaId, outputDir)
             println("Renamed $renamedCount files.")
             0
@@ -99,9 +107,7 @@ class SearchCommand : Callable<Int> {
 
     override fun call(): Int {
         val scraper = createScraper(provider)
-        val service =
-            com.mangafetcher.downloader.application
-                .MangaSearchService(scraper = scraper)
+        val service = MangaSearchService(scraper = scraper)
 
         return try {
             val results = service.search(title)
@@ -118,16 +124,14 @@ class SearchCommand : Callable<Int> {
         }
     }
 
-    private fun createScraper(providerName: String): com.mangafetcher.downloader.domain.port.MangaScraperPort =
+    private fun createScraper(providerName: String): MangaScraperPort =
         when (providerName.lowercase()) {
             "mangalivre" -> {
-                com.mangafetcher.downloader.infrastructure.scraper
-                    .MangaLivreScraper()
+                MangaLivreScraper()
             }
 
             "taosect" -> {
-                com.mangafetcher.downloader.infrastructure.scraper
-                    .TaosectScraper()
+                TaosectScraper()
             }
 
             else -> {
@@ -180,9 +184,9 @@ class DownloadCommand : Callable<Int> {
             ).use { service ->
                 try {
                     val request =
-                        com.mangafetcher.downloader.domain.model.DownloadRequest(
+                        DownloadRequest(
                             mangaId = mangaId,
-                            outputDir = java.io.File(output),
+                            outputDir = File(output),
                             chapterNumber = selection.chapterNumber,
                             fromChapter = selection.fromChapter,
                             withVolume = withVolume,
@@ -206,30 +210,24 @@ class DownloadCommand : Callable<Int> {
     private fun createDownloadProvider(
         providerName: String,
         sharedClient: PlaywrightClient,
-    ): com.mangafetcher.downloader.domain.port.MangaDownloadProvider =
+    ): MangaDownloadProvider =
         when (providerName.lowercase()) {
             "composite" -> {
                 com.mangafetcher.downloader.infrastructure.download.CompositeDownloadProvider(
                     listOf(
-                        com.mangafetcher.downloader.infrastructure.download
-                            .MangaLivreDownloadProvider(),
-                        com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider(
+                        MangaLivreDownloadProvider(),
+                        TaosectDownloadProvider(
                             sharedPlaywrightClient = sharedClient,
                         ),
                     ),
                 )
             }
 
-            "mangalivre" -> {
-                com.mangafetcher.downloader.infrastructure.download
-                    .MangaLivreDownloadProvider()
-            }
+            "mangalivre" -> MangaLivreDownloadProvider()
 
-            "taosect" -> {
-                com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider(
-                    sharedPlaywrightClient = sharedClient,
-                )
-            }
+
+            "taosect" -> TaosectDownloadProvider(sharedPlaywrightClient = sharedClient)
+
 
             else -> {
                 throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
