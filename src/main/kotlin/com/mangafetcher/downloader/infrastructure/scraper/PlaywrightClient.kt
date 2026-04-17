@@ -5,12 +5,15 @@ import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.options.LoadState
+import org.slf4j.LoggerFactory
 
 /**
  * Manages Playwright browser lifecycle and provides page fetching capabilities.
  * Handles browser initialization, page navigation, and resource cleanup.
  */
 class PlaywrightClient : AutoCloseable {
+
+    private val logger = LoggerFactory.getLogger(PlaywrightClient::class.java)
     private val playwright: Playwright = Playwright.create()
     private val browser: Browser =
         playwright.chromium().launch(
@@ -22,8 +25,17 @@ class PlaywrightClient : AutoCloseable {
                         "--disable-setuid-sandbox",
                         "--disable-dev-shm-usage",
                         "--disable-gpu",
+                        "--disable-software-rasterizer",
+                        "--disable-extensions",
+                        "--disable-background-timer-throttling",
+                        "--disable-backgrounding-occluded-windows",
+                        "--disable-renderer-backgrounding",
+                        "--disable-blink-features=AutomationControlled",
+                        "--disable-features=VizDisplayCompositor",
+                        "--disable-web-security",
+                        "--disable-features=IsolateOrigins,site-per-process",
                     ),
-                ),
+                ).setTimeout(60000.0),
         )
     private val context =
         browser.newContext(
@@ -37,13 +49,60 @@ class PlaywrightClient : AutoCloseable {
      * Creates a new page, navigates to the URL, waits for DOM to load, and returns the HTML.
      */
     fun fetchPage(url: String): String {
+        logger.debug("Navigating to: {}", url)
         val page = context.newPage()
         try {
-            page.navigate(url)
+            logger.debug("Created new page")
+            val response = page.navigate(url)
+            logger.debug("Navigate completed, status: {}", response?.status())
+
             page.waitForLoadState(LoadState.DOMCONTENTLOADED)
-            return page.content()
+            logger.debug("Page loaded successfully (DOMCONTENTLOADED)")
+
+            // Wait a bit more for any dynamic content
+            try {
+                page.waitForLoadState(LoadState.NETWORKIDLE, Page.WaitForLoadStateOptions().setTimeout(5000.0))
+                logger.debug("Network idle")
+            } catch (e: Exception) {
+                logger.debug("Network idle timeout (may be normal): {}", e.message)
+            }
+
+            logger.debug("Extracting page content using page.evaluate()...")
+
+            // Use evaluate to get the HTML instead of page.content()
+            // page.content() has been observed to hang on subsequent calls in Docker
+            // Try multiple methods with shorter timeout
+            val content = try {
+                // Method 1: Try documentElement.outerHTML with a reasonable wait
+                logger.debug("Trying method 1: documentElement.outerHTML")
+                page.evaluate("() => document.documentElement.outerHTML") as String
+            } catch (e: Exception) {
+                logger.warn("Method 1 failed: {}, trying method 2", e.message)
+                try {
+                    // Method 2: Try body.parentElement.outerHTML
+                    logger.debug("Trying method 2: body.parentElement.outerHTML")
+                    page.evaluate("() => document.body.parentElement.outerHTML") as String
+                } catch (e2: Exception) {
+                    logger.warn("Method 2 failed: {}, trying method 3 (page.content)", e2.message)
+                    // Method 3: Fall back to page.content() as last resort
+                    logger.debug("Trying method 3: page.content()")
+                    page.content()
+                }
+            }
+
+            logger.debug("Content extracted, length: {} bytes", content.length)
+            return content
+        } catch (e: Exception) {
+            logger.error("Failed to load page: {}", e.message, e)
+            throw e
         } finally {
-            page.close()
+            logger.debug("Closing page...")
+            try {
+                page.close()
+                logger.debug("Page closed successfully")
+            } catch (e: Exception) {
+                logger.warn("Error closing page: {}", e.message)
+            }
         }
     }
 
@@ -65,25 +124,33 @@ class PlaywrightClient : AutoCloseable {
      * Scrolls to trigger lazy loading and waits for network to be idle.
      */
     fun fetchChapterPageWithImages(url: String): String {
+        logger.debug("Loading chapter page with images: {}", url)
         val page = context.newPage()
         try {
             page.navigate(url)
             page.waitForLoadState(LoadState.DOMCONTENTLOADED)
 
             try {
+                logger.debug("Waiting for images to load...")
                 page.waitForSelector(
                     ".reading-content img, .page-break img, img.wp-manga-chapter-img",
                     Page.WaitForSelectorOptions().setTimeout(5000.0),
                 )
             } catch (e: Exception) {
                 // Ignore timeout - some pages might not have images
+                logger.debug("Image selector timeout (may be normal)")
             }
 
             // Scroll to trigger lazy loading
+            logger.debug("Scrolling to trigger lazy loading...")
             page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
             page.waitForLoadState(LoadState.NETWORKIDLE)
+            logger.debug("All images loaded")
 
             return page.content()
+        } catch (e: Exception) {
+            logger.error("Failed to load chapter page: {}", e.message)
+            throw e
         } finally {
             page.close()
         }

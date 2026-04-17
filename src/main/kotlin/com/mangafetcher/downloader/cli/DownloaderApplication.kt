@@ -17,7 +17,40 @@ import kotlin.system.exitProcess
     ],
 )
 class DownloaderApplication : Callable<Int> {
-    override fun call(): Int = 0
+    @CommandLine.Option(
+        names = ["--log-level"],
+        description = ["Log level: trace, debug, info, warn, error (default: info)"],
+        defaultValue = "info"
+    )
+    var logLevel: String = "info"
+
+    override fun call(): Int {
+        configureLogging(logLevel)
+        return 0
+    }
+
+    companion object {
+        fun configureLogging(level: String) {
+            val normalizedLevel = level.lowercase()
+
+            // Set log level
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", normalizedLevel)
+
+            // Enable timestamp with clean format
+            System.setProperty("org.slf4j.simpleLogger.showDateTime", "true")
+            System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "HH:mm:ss.SSS")
+
+            // Show level in output (e.g., [INFO], [DEBUG])
+            System.setProperty("org.slf4j.simpleLogger.showLogName", "true")
+            System.setProperty("org.slf4j.simpleLogger.showShortLogName", "true")
+
+            // Don't show thread name (cleaner output)
+            System.setProperty("org.slf4j.simpleLogger.showThreadName", "false")
+
+            // Format: [HH:mm:ss.SSS] [LEVEL] ShortClassName - message
+            System.setProperty("org.slf4j.simpleLogger.levelInBrackets", "true")
+        }
+    }
 }
 
 @Command(name = "rename", description = ["Retroactively rename files to include volume information"])
@@ -53,10 +86,18 @@ class SearchCommand : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["Title to search for"])
     lateinit var title: String
 
+    @CommandLine.Option(
+        names = ["-p", "--provider"],
+        description = ["Search provider to use: mangalivre, taosect"],
+        defaultValue = "mangalivre"
+    )
+    lateinit var provider: String
+
     override fun call(): Int {
+        val scraper = createScraper(provider)
         val service =
             com.mangafetcher.downloader.application
-                .MangaSearchService()
+                .MangaSearchService(scraper = scraper)
 
         return try {
             val results = service.search(title)
@@ -70,6 +111,14 @@ class SearchCommand : Callable<Int> {
         } catch (e: Exception) {
             System.err.println("Error: ${e.message}")
             1
+        }
+    }
+
+    private fun createScraper(providerName: String): com.mangafetcher.downloader.domain.port.MangaScraperPort {
+        return when (providerName.lowercase()) {
+            "mangalivre" -> com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper()
+            "taosect" -> com.mangafetcher.downloader.infrastructure.scraper.TaosectScraper()
+            else -> throw IllegalArgumentException("Unknown provider: $providerName. Valid options: mangalivre, taosect")
         }
     }
 }
@@ -181,6 +230,12 @@ fun main(args: Array<String>) {
     } catch (e: Exception) {
         // Ignore initialization errors if we are not in a native image or it fails
     }
+
+    // Extract log level from args before creating CommandLine (to configure logging early)
+    val logLevel = args.indexOf("--log-level").let { index ->
+        if (index >= 0 && index + 1 < args.size) args[index + 1] else "info"
+    }
+    DownloaderApplication.configureLogging(logLevel)
 
     exitProcess(CommandLine(DownloaderApplication()).execute(*args))
 }

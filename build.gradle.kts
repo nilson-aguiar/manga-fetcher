@@ -9,6 +9,7 @@ plugins {
 
 application {
     mainClass.set("com.mangafetcher.downloader.cli.DownloaderApplicationKt")
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
 }
 
 group = "com.mangafetcher"

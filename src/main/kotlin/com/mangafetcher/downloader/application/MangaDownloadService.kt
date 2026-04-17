@@ -19,6 +19,7 @@ import com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataPro
 import com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider
 import com.mangafetcher.downloader.infrastructure.persistence.SqliteDownloadRepository
 import com.mangafetcher.downloader.infrastructure.scraper.MangaDetails
+import org.slf4j.LoggerFactory
 import java.io.File
 
 class MangaDownloadService(
@@ -39,6 +40,8 @@ class MangaDownloadService(
             ),
         ),
 ) {
+    private val logger = LoggerFactory.getLogger(MangaDownloadService::class.java)
+
     fun downloadManga(request: DownloadRequest): DownloadResult {
         request.outputDir.mkdirs()
 
@@ -62,7 +65,7 @@ class MangaDownloadService(
 
                 val allChapters = provider.fetchChapters(request.mangaId)
                 if (allChapters.isEmpty()) {
-                    println("No chapters found for manga ${request.mangaId}.")
+                    logger.warn("No chapters found for manga {}", request.mangaId)
                     return DownloadResult(0, 0, 0)
                 }
 
@@ -74,11 +77,11 @@ class MangaDownloadService(
                     )
 
                 if (chaptersToDownload.isEmpty()) {
-                    println("No chapters found matching the criteria.")
+                    logger.warn("No chapters found matching the criteria")
                     return DownloadResult(0, 0, 0)
                 }
 
-                println("Found ${chaptersToDownload.size} chapters to process.")
+                logger.info("Found {} chapters to process", chaptersToDownload.size)
 
                 dbTracker.use { tracker ->
                     for (chapter in chaptersToDownload) {
@@ -96,7 +99,7 @@ class MangaDownloadService(
                                 withVolume = request.withVolume,
                             )
                         ) {
-                            println("Standardized filename for chapter $cNum")
+                            logger.debug("Standardized filename for chapter {}", cNum)
                         }
 
                         // Check if chapter is already downloaded
@@ -108,15 +111,15 @@ class MangaDownloadService(
                                 cId,
                             )
                         if (existingFile != null || tracker.isDownloaded(request.mangaId, cId)) {
-                            println("Skipping chapter $cNum (already exists or in database).")
+                            logger.info("Skipping chapter {} (already exists or in database)", cNum)
                             skippedCount++
                             continue
                         }
 
-                        println("Downloading images for ${request.mangaId} chapter $cNum...")
+                        logger.info("Downloading images for {} chapter {}", request.mangaId, cNum)
                         val images = provider.downloadChapterImages(request.mangaId, cId, tempDir)
                         if (images.isEmpty()) {
-                            println("Error: No images found or failed to download chapter $cNum.")
+                            logger.error("No images found or failed to download chapter {}", cNum)
                             failedCount++
                             continue
                         }
@@ -131,10 +134,10 @@ class MangaDownloadService(
                         val finalName = ChapterNamingUtils.getFileName(cNum, volume, request.withVolume)
                         val outputFile = File(request.outputDir, finalName)
 
-                        println("Converting to ${outputFile.absolutePath}...")
+                        logger.info("Converting to {}", outputFile.absolutePath)
                         converter.convertToCbz(images, outputFile, metadataXml)
                         tracker.markDownloaded(request.mangaId, cId, cNum)
-                        println("Successfully downloaded and converted to ${outputFile.name}")
+                        logger.info("Successfully downloaded and converted to {}", outputFile.name)
                         successCount++
 
                         tempDir.listFiles()?.forEach { it.delete() }
@@ -192,7 +195,7 @@ class MangaDownloadService(
             ).joinToString(",") { escapeCsv(it) }
 
         infoFile.writeText("$header\n$row")
-        println("Saved manga metadata to manga_info.csv")
+        logger.info("Saved manga metadata to manga_info.csv")
     }
 
     private fun escapeCsv(value: String): String {
@@ -211,12 +214,12 @@ class MangaDownloadService(
         val coverFile = File(outputDir, "cover.jpg")
         if (coverFile.exists() || coverUrl.isEmpty()) return
 
-        println("Downloading cover image...")
+        logger.info("Downloading cover image...")
         try {
             downloadProvider.downloadFile(coverUrl, coverFile)
-            println("Saved cover image to cover.jpg")
+            logger.info("Saved cover image to cover.jpg")
         } catch (e: Exception) {
-            println("Failed to download cover image: ${e.message}")
+            logger.warn("Failed to download cover image: {}", e.message)
         }
     }
 

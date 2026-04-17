@@ -3,11 +3,13 @@ package com.mangafetcher.downloader.application
 import com.mangafetcher.downloader.domain.port.MangaScraperPort
 import com.mangafetcher.downloader.domain.service.ChapterNamingUtils
 import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
+import org.slf4j.LoggerFactory
 import java.io.File
 
 class ChapterRenameService(
     private val scraper: MangaScraperPort = MangaLivreScraper(),
 ) {
+    private val logger = LoggerFactory.getLogger(ChapterRenameService::class.java)
     fun renameChapters(
         mangaId: String,
         outputDir: File,
@@ -19,7 +21,7 @@ class ChapterRenameService(
         return scraper.use { s ->
             val allChapters = s.fetchChapters(mangaId)
             if (allChapters.isEmpty()) {
-                println("No chapters found for manga $mangaId.")
+                logger.warn("No chapters found for manga {}", mangaId)
                 return@use 0
             }
 
