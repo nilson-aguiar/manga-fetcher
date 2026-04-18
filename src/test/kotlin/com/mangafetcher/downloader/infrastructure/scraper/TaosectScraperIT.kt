@@ -1,6 +1,7 @@
 package com.mangafetcher.downloader.infrastructure.scraper
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -10,7 +11,7 @@ import kotlin.test.assertTrue
  * These tests make real HTTP requests to Taosect and are disabled by default.
  * Set ENABLE_INTEGRATION_TESTS=true to run them.
  */
-// @EnabledIfEnvironmentVariable(named = "ENABLE_INTEGRATION_TESTS", matches = "true")
+@EnabledIfEnvironmentVariable(named = "ENABLE_INTEGRATION_TESTS", matches = "true")
 class TaosectScraperIT {
     @Test
     fun `should fetch manga details for One Punch Man`() {
