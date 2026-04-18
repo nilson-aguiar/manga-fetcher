@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.0.0...v1.1.0) (2026-04-17)
+
+
+### Features
+
+* add new provider + docs ([0e02b67](https://github.com/nilson-aguiar/manga-fetcher/commit/0e02b679085efb0343059184a713876747d079a1))
+* create composite work for download and metadata ([f0af937](https://github.com/nilson-aguiar/manga-fetcher/commit/f0af9378c631b64c369802b08608a7a3173a38e8))
+* **docker:** Add Docker compose setup with documentation ([f019df4](https://github.com/nilson-aguiar/manga-fetcher/commit/f019df493ae7aa191d5cc6058fc2de05a5c58018))
+* fetch metadata, add cover and db for downloads ([6f3a670](https://github.com/nilson-aguiar/manga-fetcher/commit/6f3a67099019cccaf54c8365473a9d19860be513))
+* improve tests ([a175fdf](https://github.com/nilson-aguiar/manga-fetcher/commit/a175fdf4ef0a200be2baf4da08546c7565258875))
+* **taosect:** Add logging, caching, and provider selection ([8bb1b67](https://github.com/nilson-aguiar/manga-fetcher/commit/8bb1b67e087d5daa2176cc0d48722352b3f8c4df))
+
+
+### Bug Fixes
+
+* add browser args ([c0c7b39](https://github.com/nilson-aguiar/manga-fetcher/commit/c0c7b3991d18374e8a1e7c59103edd635601258f))
+* metadata fetching ([b1d2468](https://github.com/nilson-aguiar/manga-fetcher/commit/b1d2468dc3975f5a82a3e0593eab2d8c5df479e8))
+* remove deprecated methods and fix image generation ([541e7fb](https://github.com/nilson-aguiar/manga-fetcher/commit/541e7fb61bd449fc6e49313125c3b1e5430e2ae9))
+
 ## 1.0.0 (2026-04-15)
 
 
