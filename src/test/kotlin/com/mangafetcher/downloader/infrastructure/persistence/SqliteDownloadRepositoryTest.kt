@@ -23,4 +23,31 @@ class SqliteDownloadRepositoryTest {
             assertTrue(tracker.isDownloaded(mangaId, chapterId))
         }
     }
+
+    @Test
+    fun `test get all downloads`() {
+        val dbFile = File(tempDir, "test-list.db")
+        SqliteDownloadRepository(dbFile).use { tracker ->
+            tracker.markDownloaded("manga1", "chap1", "1")
+            tracker.markDownloaded("manga1", "chap2", "2")
+            tracker.markDownloaded("manga2", "chap1", "1")
+
+            val all = tracker.getAllDownloads()
+            kotlin.test.assertEquals(3, all.size)
+            assertTrue(all.any { it.mangaId == "manga1" && it.chapterId == "chap1" && it.chapterNumber == "1" })
+        }
+    }
+
+    @Test
+    fun `test remove download`() {
+        val dbFile = File(tempDir, "test-remove.db")
+        SqliteDownloadRepository(dbFile).use { tracker ->
+            tracker.markDownloaded("manga1", "chap1", "1")
+            assertTrue(tracker.isDownloaded("manga1", "chap1"))
+
+            tracker.removeDownload("manga1", "chap1")
+            assertFalse(tracker.isDownloaded("manga1", "chap1"))
+            assertTrue(tracker.getAllDownloads().isEmpty())
+        }
+    }
 }

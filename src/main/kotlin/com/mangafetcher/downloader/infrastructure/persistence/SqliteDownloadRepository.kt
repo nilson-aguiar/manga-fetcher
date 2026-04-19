@@ -59,6 +59,37 @@ class SqliteDownloadRepository(
         }
     }
 
+    override fun getAllDownloads(): List<com.mangafetcher.downloader.domain.port.DownloadEntry> {
+        val sql = "SELECT manga_id, chapter_id, chapter_number FROM downloads"
+        return connection.prepareStatement(sql).use { statement ->
+            statement.executeQuery().use { resultSet ->
+                val downloads = mutableListOf<com.mangafetcher.downloader.domain.port.DownloadEntry>()
+                while (resultSet.next()) {
+                    downloads.add(
+                        com.mangafetcher.downloader.domain.port.DownloadEntry(
+                            mangaId = resultSet.getString("manga_id"),
+                            chapterId = resultSet.getString("chapter_id"),
+                            chapterNumber = resultSet.getString("chapter_number"),
+                        ),
+                    )
+                }
+                downloads
+            }
+        }
+    }
+
+    override fun removeDownload(
+        mangaId: String,
+        chapterId: String,
+    ) {
+        val sql = "DELETE FROM downloads WHERE manga_id = ? AND chapter_id = ?"
+        connection.prepareStatement(sql).use { statement ->
+            statement.setString(1, mangaId)
+            statement.setString(2, chapterId)
+            statement.executeUpdate()
+        }
+    }
+
     override fun close() {
         if (!connection.isClosed) {
             connection.close()

@@ -26,6 +26,7 @@ import kotlin.system.exitProcess
         SearchCommand::class,
         DownloadCommand::class,
         RenameCommand::class,
+        CheckCommand::class,
     ],
 )
 class DownloaderApplication : Callable<Int> {
@@ -238,7 +239,102 @@ class DownloadCommand : Callable<Int> {
                 throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
             }
         }
+}
 
+@Command(name = "check", description = ["Check if database entries match existing files"])
+class CheckCommand : Callable<Int> {
+    private val logger = LoggerFactory.getLogger(CheckCommand::class.java)
+
+    @CommandLine.Option(
+        names = ["-o", "--output", "--output-dir"],
+        description = ["Output directory"],
+        defaultValue = ".",
+    )
+    lateinit var output: String
+
+    @CommandLine.Option(
+        names = ["-d", "--delete-missing"],
+        description = ["Automatically delete missing entries from the database"],
+    )
+    var deleteMissing: Boolean = false
+
+    override fun call(): Int {
+        val outputDir = File(output)
+        if (!outputDir.exists() || !outputDir.isDirectory) {
+            logger.error("Output directory does not exist or is not a directory: $output")
+            return 1
+        }
+
+        val dbFile = File(outputDir, "download.db")
+        if (!dbFile.exists()) {
+            logger.error("Database file not found at: ${dbFile.absolutePath}")
+            return 1
+        }
+
+        return com.mangafetcher.downloader.infrastructure.persistence.SqliteDownloadRepository(dbFile).use { tracker ->
+            val entries = tracker.getAllDownloads()
+            if (entries.isEmpty()) {
+                logger.info("No entries found in the database.")
+                return 0
+            }
+
+            logger.info("Checking {} entries in the database...", entries.size)
+
+            val missingEntries = mutableListOf<com.mangafetcher.downloader.domain.port.DownloadEntry>()
+
+            for (entry in entries) {
+                val existingFile =
+                    com.mangafetcher.downloader.domain.service.ChapterNamingUtils.findExistingFile(
+                        outputDir,
+                        entry.chapterNumber,
+                        entry.mangaId,
+                        entry.chapterId,
+                    )
+                if (existingFile == null) {
+                    missingEntries.add(entry)
+                }
+            }
+
+            if (missingEntries.isEmpty()) {
+                logger.info("All database entries match existing files.")
+                return 0
+            }
+
+            logger.warn("Found {} missing files.", missingEntries.size)
+            for (entry in missingEntries) {
+                logger.warn("  - Manga ID: {}, Chapter: {}", entry.mangaId, entry.chapterNumber)
+            }
+
+            var deletedCount = 0
+
+            if (deleteMissing) {
+                logger.info("Automatically deleting missing entries from database...")
+                for (entry in missingEntries) {
+                    tracker.removeDownload(entry.mangaId, entry.chapterId)
+                    deletedCount++
+                }
+            } else {
+                print("\nDo you want to remove these entries from the database? [y/N]: ")
+                val response = readlnOrNull()?.trim()?.lowercase() ?: ""
+                if (response == "y" || response == "yes") {
+                    logger.info("Deleting entries...")
+                    for (entry in missingEntries) {
+                        tracker.removeDownload(entry.mangaId, entry.chapterId)
+                        deletedCount++
+                    }
+                } else {
+                    logger.info("Skipped deleting entries.")
+                }
+            }
+
+            logger.info("\n=== Check Summary ===")
+            logger.info("Total entries checked: {}", entries.size)
+            logger.info("Missing files found: {}", missingEntries.size)
+            logger.info("Entries deleted: {}", deletedCount)
+
+            0
+        }
+    }
 }
 
 fun main(args: Array<String>) {
