@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.2.0...v1.3.0) (2026-04-19)
+
+
+### Features
+
+* add check command ([a434e5a](https://github.com/nilson-aguiar/manga-fetcher/commit/a434e5a83edc4b3bb3ac6f1388c5d61830863df7))
+
+
+### Bug Fixes
+
+* fix broken chapter names ([2d3700f](https://github.com/nilson-aguiar/manga-fetcher/commit/2d3700f4a74ce6cc925fe3feb41a8b1501ab2fcb))
+* remove duplicate chapters ([4e49d31](https://github.com/nilson-aguiar/manga-fetcher/commit/4e49d31609772ed06dd417a358b3872912e35c49))
+* restore chapter revision ([d34cb16](https://github.com/nilson-aguiar/manga-fetcher/commit/d34cb162045ad2e582274a3c8ba4e356159cf250))
+
 ## [1.2.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.1.0...v1.2.0) (2026-04-19)
 
 
