@@ -10,6 +10,7 @@ import com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvid
 import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
 import com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient
 import com.mangafetcher.downloader.infrastructure.scraper.TaosectScraper
+import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import java.io.File
@@ -66,6 +67,8 @@ class DownloaderApplication : Callable<Int> {
 
 @Command(name = "rename", description = ["Retroactively rename files to include volume information"])
 class RenameCommand : Callable<Int> {
+    private val logger = LoggerFactory.getLogger(RenameCommand::class.java)
+
     @CommandLine.Parameters(index = "0", description = ["Manga ID"])
     lateinit var mangaId: String
 
@@ -78,13 +81,13 @@ class RenameCommand : Callable<Int> {
         return try {
             val outputDir = File(output)
             val renamedCount = service.renameChapters(mangaId, outputDir)
-            println("Renamed $renamedCount files.")
+            logger.info("Renamed {} files.", renamedCount)
             0
         } catch (e: IllegalArgumentException) {
-            println(e.message)
+            logger.error(e.message)
             1
         } catch (e: Exception) {
-            System.err.println("Error: ${e.message}")
+            logger.error("Error: {}", e.message)
             1
         }
     }
@@ -92,6 +95,8 @@ class RenameCommand : Callable<Int> {
 
 @Command(name = "search", description = ["Search for manga by title"])
 class SearchCommand : Callable<Int> {
+    private val logger = LoggerFactory.getLogger(SearchCommand::class.java)
+
     @CommandLine.Parameters(index = "0", description = ["Title to search for"])
     lateinit var title: String
 
@@ -109,15 +114,15 @@ class SearchCommand : Callable<Int> {
             MangaSearchService(scraper = scraper).use { service ->
                 val results = service.search(title)
                 if (results.isEmpty()) {
-                    println("No results found for '$title'")
+                    logger.info("No results found for '{}'", title)
                 } else {
-                    println("Search results for '$title':")
-                    results.forEach { println("- ${it.title} (ID: ${it.id})") }
+                    logger.info("Search results for '{}':", title)
+                    results.forEach { logger.info("- {} (ID: {})", it.title, it.id) }
                 }
                 0
             }
         } catch (e: Exception) {
-            System.err.println("Error: ${e.message}")
+            logger.error("Error: {}", e.message)
             1
         }
     }
@@ -140,6 +145,8 @@ class SearchCommand : Callable<Int> {
 
 @Command(name = "download", description = ["Download chapters of a manga"])
 class DownloadCommand : Callable<Int> {
+    private val logger = LoggerFactory.getLogger(DownloadCommand::class.java)
+
     @CommandLine.Parameters(index = "0", description = ["Manga ID"])
     lateinit var mangaId: String
 
@@ -192,14 +199,14 @@ class DownloadCommand : Callable<Int> {
 
                     val result = service.downloadManga(request)
 
-                    println("\n=== Download Summary ===")
-                    println("Successfully downloaded: ${result.successCount} chapters")
-                    println("Skipped (already exists): ${result.skippedCount} chapters")
-                    println("Failed: ${result.failedCount} chapters")
+                    logger.info("\n=== Download Summary ===")
+                    logger.info("Successfully downloaded: {} chapters", result.successCount)
+                    logger.info("Skipped (already exists): {} chapters", result.skippedCount)
+                    logger.info("Failed: {} chapters", result.failedCount)
 
                     0
                 } catch (e: Exception) {
-                    System.err.println("Error: ${e.message}")
+                    logger.error("Error: {}", e.message)
                     1
                 }
             }

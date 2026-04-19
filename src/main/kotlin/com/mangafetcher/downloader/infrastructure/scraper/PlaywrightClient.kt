@@ -89,13 +89,13 @@ class PlaywrightClient(
             logger.debug("Created new page")
             val response = page.navigate(url)
             val status = response?.status() ?: -1
-            println("DEBUG: Navigation to $url status code: $status")
+            logger.debug("Navigation to {} status code: {}", url, status)
 
             if (status != 200) {
-                println("DEBUG: Response headers: ${response?.headers()}")
+                logger.debug("Response headers: {}", response?.headers())
                 // In case of error (like 403), still try to grab content to see if it's a Cloudflare challenge
                 val errorContent = page.content()
-                println("DEBUG: Error page content (first 500 chars): ${errorContent.take(500)}")
+                logger.debug("Error page content (first 500 chars): {}", errorContent.take(500))
             }
 
             page.waitForLoadState(LoadState.DOMCONTENTLOADED)

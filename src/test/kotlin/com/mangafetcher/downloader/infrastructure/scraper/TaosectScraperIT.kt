@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -15,6 +16,7 @@ import kotlin.test.assertTrue
 @Tag("integration")
 class TaosectScraperIT {
     companion object {
+        private val logger = LoggerFactory.getLogger(TaosectScraperIT::class.java)
         private lateinit var sharedClient: PlaywrightClient
         private lateinit var scraper: TaosectScraper
 
@@ -36,7 +38,7 @@ class TaosectScraperIT {
     @Test
     fun `should fetch manga details for One Punch Man`() {
         val details = scraper.fetchMangaDetails("one-punch-man")
-        println("DEBUG: Manga details fetched: $details")
+        logger.debug("Manga details fetched: {}", details)
 
         assertEquals("One Punch Man", details.title, "Title mismatch: $details")
         assertTrue(details.authors.contains("ONE"), "Author missing: $details")
@@ -49,13 +51,13 @@ class TaosectScraperIT {
     @Test
     fun `should fetch chapters for One Punch Man`() {
         val chapters = scraper.fetchChapters("one-punch-man")
-        println("DEBUG: Found ${chapters.size} chapters")
+        logger.debug("Found {} chapters", chapters.size)
 
         assertTrue(chapters.isNotEmpty(), "No chapters found")
         // assertTrue(chapters.size > 200, "Expected more than 200 chapters, found ${chapters.size}")
 
         val firstChapter = chapters.first()
-        println("DEBUG: First chapter: $firstChapter")
+        logger.debug("First chapter: {}", firstChapter)
         assertTrue(firstChapter.number.isNotEmpty(), "First chapter number empty")
         assertTrue(firstChapter.id.isNotEmpty(), "First chapter ID empty")
 

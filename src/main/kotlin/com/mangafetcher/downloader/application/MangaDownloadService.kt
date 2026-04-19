@@ -82,13 +82,13 @@ class MangaDownloadService(
             if (chaptersToDownload.isEmpty()) {
                 val requested = request.chapterNumber ?: request.fromChapter ?: "unknown"
                 logger.warn("No chapters found matching the criteria")
-                println("\n❌ Chapter '$requested' not found!")
-                println("📚 Total chapters available: ${allChapters.size}")
+                logger.info("\n❌ Chapter '{}' not found!", requested)
+                logger.info("📚 Total chapters available: {}", allChapters.size)
 
                 // Show some available options
                 if (allChapters.isNotEmpty()) {
                     val samplesToShow = 10
-                    println("\n📖 Available chapters:")
+                    logger.info("\n📖 Available chapters:")
 
                     // If we have many chapters, show first 5 and last 5
                     val samples =
@@ -100,11 +100,11 @@ class MangaDownloadService(
 
                     samples.forEach { chapter ->
                         val volumeInfo = chapter.volume?.let { " (Vol. $it)" } ?: ""
-                        println("  • Chapter ${chapter.number}$volumeInfo")
+                        logger.info("  • Chapter {}{}", chapter.number, volumeInfo)
                     }
 
                     if (allChapters.size > samplesToShow) {
-                        println("  ... and ${allChapters.size - samplesToShow} more")
+                        logger.info("  ... and {} more", allChapters.size - samplesToShow)
                     }
 
                     // Show closest matches if user specified a chapter number
@@ -117,10 +117,10 @@ class MangaDownloadService(
                                 .take(3)
 
                         if (closest.isNotEmpty() && closest[0].second > 0) {
-                            println("\n💡 Closest matches:")
+                            logger.info("\n💡 Closest matches:")
                             closest.forEach { (chapter, _) ->
                                 val volumeInfo = chapter.volume?.let { " (Vol. $it)" } ?: ""
-                                println("  • Chapter ${chapter.number}$volumeInfo")
+                                logger.info("  • Chapter {}{}", chapter.number, volumeInfo)
                             }
                         }
                     }
