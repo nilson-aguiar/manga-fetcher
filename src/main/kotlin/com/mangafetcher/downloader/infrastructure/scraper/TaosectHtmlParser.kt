@@ -110,7 +110,16 @@ class TaosectHtmlParser {
         }
 
         logger.debug("Parsed {} chapters before deduplication", chapters.size)
-        val uniqueChapters = chapters.distinctBy { it.id }
+        // Deduplicate by chapter number, keeping the "latest" version (v2 > v1)
+        // by sorting by ID descending first.
+        val uniqueChapters = chapters
+            .sortedByDescending { it.id }
+            .distinctBy { it.number }
+            .sortedBy { 
+                // Restore some semblance of order for logging, though scraper sorts again
+                it.number.toDoubleOrNull() ?: 0.0 
+            }
+        
         logger.debug("Returning {} unique chapters", uniqueChapters.size)
         return uniqueChapters
     }
