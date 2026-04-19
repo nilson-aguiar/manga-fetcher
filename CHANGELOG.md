@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.1.0...v1.2.0) (2026-04-19)
+
+
+### Features
+
+* add basic renovate options ([246762a](https://github.com/nilson-aguiar/manga-fetcher/commit/246762a3b1d8eca5c2391711c4d3849922923f00))
+* add branches ci ([6f7c743](https://github.com/nilson-aguiar/manga-fetcher/commit/6f7c74321563387d5af84b01ff513f4c4a842aaf))
+
+
+### Bug Fixes
+
+* add logs for broken test ([414c925](https://github.com/nilson-aguiar/manga-fetcher/commit/414c925952d7ee480c2a9316dbb9228c7c038abd))
+* add logs for broken test ([59fe056](https://github.com/nilson-aguiar/manga-fetcher/commit/59fe05699b71b11976b6aaaac65388f48471d0e6))
+* **deps:** update all non-major dependencies ([f8962cd](https://github.com/nilson-aguiar/manga-fetcher/commit/f8962cd3681cfce5cf03b397f7e1c72d4d12e488))
+* **deps:** update all non-major dependencies ([6e55750](https://github.com/nilson-aguiar/manga-fetcher/commit/6e55750c0e2df58bc3a64d80196a8485d341f743))
+* **deps:** update dependency org.junit.jupiter:junit-jupiter to v6 ([e5a8af1](https://github.com/nilson-aguiar/manga-fetcher/commit/e5a8af10e478f4d04d3a6944b320457c173b0615))
+* **deps:** update dependency org.junit.jupiter:junit-jupiter to v6 ([72a41ac](https://github.com/nilson-aguiar/manga-fetcher/commit/72a41ac66a2cdff6054c7750fc74d42160e8ad30))
+* **deps:** update okhttp monorepo to v5 ([8120cd8](https://github.com/nilson-aguiar/manga-fetcher/commit/8120cd8dd616565a4e5e1fc25b40f1ac9c4d358f))
+* **deps:** update okhttp monorepo to v5 (major) ([8e14950](https://github.com/nilson-aguiar/manga-fetcher/commit/8e149508ea340cf620cd391155156e9444c870c8))
+* fix broken test ([17adc3b](https://github.com/nilson-aguiar/manga-fetcher/commit/17adc3b63cc71b5b7eebd9b39ded0c6b94511ec2))
+* ignore some tests on ci ([96c9ce2](https://github.com/nilson-aguiar/manga-fetcher/commit/96c9ce26dd7a50ed21fe30097434259187d7c3a1))
+* set a single concurrent ci to run ([310594f](https://github.com/nilson-aguiar/manga-fetcher/commit/310594f800d3b555293e29d7f42d1d2913134498))
+
 ## [1.1.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.0.0...v1.1.0) (2026-04-17)
 
 
