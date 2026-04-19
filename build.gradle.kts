@@ -26,7 +26,7 @@ repositories {
 dependencies {
     implementation("info.picocli:picocli:4.7.7")
     kapt("info.picocli:picocli-codegen:4.7.7")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("com.microsoft.playwright:playwright:1.59.0")
     implementation("org.jsoup:jsoup:1.22.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
@@ -34,7 +34,7 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.53.0.0")
     implementation("org.slf4j:slf4j-simple:2.0.17")
 
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.3.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.junit.jupiter:junit-jupiter:5.14.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
