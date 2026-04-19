@@ -47,7 +47,12 @@ kotlin {
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        val excludeTags = project.findProperty("excludeTags") as? String
+        if (!excludeTags.isNullOrBlank()) {
+            excludeTags(excludeTags)
+        }
+    }
     testLogging {
         showStandardStreams = true
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL

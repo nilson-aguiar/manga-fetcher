@@ -2,9 +2,11 @@ package com.mangafetcher.downloader.infrastructure.scraper
 
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 
+@Tag("integration")
 class MangaLivreScraperIT {
     companion object {
         private lateinit var sharedClient: PlaywrightClient

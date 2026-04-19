@@ -2,6 +2,7 @@ package com.mangafetcher.downloader.infrastructure.scraper
 
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -9,8 +10,9 @@ import kotlin.test.assertTrue
 
 /**
  * Integration test for TaosectScraper.
- * These tests make real HTTP requests to Taosect and are disabled by default.
+ * These tests make real HTTP requests to Taosect and are disabled in CI due to Cloudflare.
  */
+@Tag("integration")
 class TaosectScraperIT {
     companion object {
         private lateinit var sharedClient: PlaywrightClient

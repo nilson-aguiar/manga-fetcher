@@ -43,7 +43,7 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Build and Test with Gradle
-      run: ./gradlew check installDist
+      run: ./gradlew check installDist -PexcludeTags=integration
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
