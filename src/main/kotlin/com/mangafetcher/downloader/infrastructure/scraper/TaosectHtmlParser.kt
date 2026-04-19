@@ -91,9 +91,9 @@ class TaosectHtmlParser {
                     }
                 }
 
-            // Clean number: extract only the leading numeric part (including decimal)
-            // This handles cases like 104v2.e.105, 120v2, 167/ etc.
-            val numberRegex = Regex("""^(\d+(\.\d+)?)""")
+            // Clean number: extract leading numeric part + optional version (e.g., 120v2)
+            // This keeps v2 in the filename but handles cases like 104v2.e.105, 115v2/ etc.
+            val numberRegex = Regex("""^(\d+(?:\.\d+)?(?:[vV]\d+)?)""")
             val match = numberRegex.find(number)
             if (match != null) {
                 number = match.value
@@ -110,14 +110,15 @@ class TaosectHtmlParser {
         }
 
         logger.debug("Parsed {} chapters before deduplication", chapters.size)
-        // Deduplicate by chapter number, keeping the "latest" version (v2 > v1)
-        // by sorting by ID descending first.
+        // Deduplicate by base chapter number (ignoring v2), keeping the latest version
+        val baseNumberRegex = Regex("""^(\d+(?:\.\d+)?)""")
         val uniqueChapters = chapters
             .sortedByDescending { it.id }
-            .distinctBy { it.number }
+            .distinctBy { 
+                baseNumberRegex.find(it.number)?.value ?: it.number 
+            }
             .sortedBy { 
-                // Restore some semblance of order for logging, though scraper sorts again
-                it.number.toDoubleOrNull() ?: 0.0 
+                it.number.replace(Regex("""[vV]\d+"""), "").toDoubleOrNull() ?: 0.0 
             }
         
         logger.debug("Returning {} unique chapters", uniqueChapters.size)
