@@ -22,8 +22,8 @@ class TaosectDownloadProvider(
     private val client: PlaywrightClient = sharedPlaywrightClient ?: PlaywrightClient()
     private val isClientOwned = sharedPlaywrightClient == null
     private val htmlParser = TaosectHtmlParser()
+    private val scraper = TaosectScraper(baseUrl, client, htmlParser)
     private val imageDownloader = TaosectImageDownloader(client, htmlParser)
-    private val scraper = TaosectScraper(baseUrl, client, htmlParser, imageDownloader)
 
     private val logger = LoggerFactory.getLogger(TaosectDownloadProvider::class.java)
 
@@ -82,7 +82,7 @@ class TaosectDownloadProvider(
     override fun close() {
         // Only close the client if we own it (not shared)
         if (isClientOwned) {
-            scraper.close()
+            client.close()
         }
     }
 }

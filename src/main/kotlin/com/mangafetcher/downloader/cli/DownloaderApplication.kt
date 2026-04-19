@@ -13,9 +13,6 @@ import com.mangafetcher.downloader.infrastructure.scraper.TaosectScraper
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import java.io.File
-import java.net.URI
-import java.nio.file.FileSystemNotFoundException
-import java.nio.file.FileSystems
 import java.util.concurrent.Callable
 import kotlin.system.exitProcess
 
@@ -107,17 +104,18 @@ class SearchCommand : Callable<Int> {
 
     override fun call(): Int {
         val scraper = createScraper(provider)
-        val service = MangaSearchService(scraper = scraper)
 
         return try {
-            val results = service.search(title)
-            if (results.isEmpty()) {
-                println("No results found for '$title'")
-            } else {
-                println("Search results for '$title':")
-                results.forEach { println("- ${it.title} (ID: ${it.id})") }
+            MangaSearchService(scraper = scraper).use { service ->
+                val results = service.search(title)
+                if (results.isEmpty()) {
+                    println("No results found for '$title'")
+                } else {
+                    println("Search results for '$title':")
+                    results.forEach { println("- ${it.title} (ID: ${it.id})") }
+                }
+                0
             }
-            0
         } catch (e: Exception) {
             System.err.println("Error: ${e.message}")
             1
@@ -215,7 +213,7 @@ class DownloadCommand : Callable<Int> {
             "composite" -> {
                 com.mangafetcher.downloader.infrastructure.download.CompositeDownloadProvider(
                     listOf(
-                        MangaLivreDownloadProvider(),
+                        MangaLivreDownloadProvider(playwrightClient = sharedClient),
                         TaosectDownloadProvider(
                             sharedPlaywrightClient = sharedClient,
                         ),
@@ -223,7 +221,7 @@ class DownloadCommand : Callable<Int> {
                 )
             }
 
-            "mangalivre" -> MangaLivreDownloadProvider()
+            "mangalivre" -> MangaLivreDownloadProvider(playwrightClient = sharedClient)
 
 
             "taosect" -> TaosectDownloadProvider(sharedPlaywrightClient = sharedClient)
@@ -237,19 +235,6 @@ class DownloadCommand : Callable<Int> {
 }
 
 fun main(args: Array<String>) {
-    try {
-        val uri = URI.create("resource:/")
-        try {
-            FileSystems
-                .getFileSystem(uri)
-        } catch (_: FileSystemNotFoundException) {
-            FileSystems
-                .newFileSystem(uri, emptyMap<String, Any>())
-        }
-    } catch (_: Exception) {
-        // Ignore initialization errors if we are not in a native image or it fails
-    }
-
     // Extract log level from args before creating CommandLine (to configure logging early)
     val logLevel =
         args.indexOf("--log-level").let { index ->

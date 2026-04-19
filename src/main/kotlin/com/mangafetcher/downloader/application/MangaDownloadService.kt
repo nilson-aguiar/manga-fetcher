@@ -19,17 +19,18 @@ import com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataPro
 import com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider
 import com.mangafetcher.downloader.infrastructure.persistence.SqliteDownloadRepository
 import com.mangafetcher.downloader.infrastructure.scraper.MangaDetails
+import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
 import com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient
 import org.slf4j.LoggerFactory
 import java.io.File
 
 class MangaDownloadService(
-    // Share a single PlaywrightClient across all Taosect components to prevent browser crashes
+    // Share a single PlaywrightClient across all components to prevent browser crashes
     private val sharedPlaywrightClient: PlaywrightClient = PlaywrightClient(),
     private val downloadProvider: MangaDownloadProvider =
         CompositeDownloadProvider(
             listOf(
-                MangaLivreDownloadProvider(),
+                MangaLivreDownloadProvider(playwrightClient = sharedPlaywrightClient),
                 TaosectDownloadProvider(sharedPlaywrightClient = sharedPlaywrightClient),
             ),
         ),
@@ -38,7 +39,7 @@ class MangaDownloadService(
         CompositeMetadataProvider(
             listOf(
                 MangaDexMetadataProvider(),
-                MangaLivreMetadataProvider(),
+                MangaLivreMetadataProvider(MangaLivreScraper(playwrightClient = sharedPlaywrightClient)),
                 TaosectMetadataProvider(sharedPlaywrightClient = sharedPlaywrightClient),
             ),
         ),
@@ -61,135 +62,133 @@ class MangaDownloadService(
         var failedCount = 0
 
         try {
-            downloadProvider.use { provider ->
-                val details = provider.fetchMangaDetails(request.mangaId)
-                saveMangaInfo(details, request.outputDir)
-                downloadCover(details.coverUrl, request.outputDir)
+            val details = downloadProvider.fetchMangaDetails(request.mangaId)
+            saveMangaInfo(details, request.outputDir)
+            downloadCover(details.coverUrl, request.outputDir)
 
-                val allChapters = provider.fetchChapters(request.mangaId)
-                if (allChapters.isEmpty()) {
-                    logger.warn("No chapters found for manga {}", request.mangaId)
-                    return DownloadResult(0, 0, 0)
-                }
+            val allChapters = downloadProvider.fetchChapters(request.mangaId)
+            if (allChapters.isEmpty()) {
+                logger.warn("No chapters found for manga {}", request.mangaId)
+                return DownloadResult(0, 0, 0)
+            }
 
-                val chaptersToDownload =
-                    filterChapters(
-                        allChapters,
-                        request.chapterNumber,
-                        request.fromChapter,
-                    )
+            val chaptersToDownload =
+                filterChapters(
+                    allChapters,
+                    request.chapterNumber,
+                    request.fromChapter,
+                )
 
-                if (chaptersToDownload.isEmpty()) {
-                    val requested = request.chapterNumber ?: request.fromChapter ?: "unknown"
-                    logger.warn("No chapters found matching the criteria")
-                    println("\n❌ Chapter '$requested' not found!")
-                    println("📚 Total chapters available: ${allChapters.size}")
+            if (chaptersToDownload.isEmpty()) {
+                val requested = request.chapterNumber ?: request.fromChapter ?: "unknown"
+                logger.warn("No chapters found matching the criteria")
+                println("\n❌ Chapter '$requested' not found!")
+                println("📚 Total chapters available: ${allChapters.size}")
 
-                    // Show some available options
-                    if (allChapters.isNotEmpty()) {
-                        val samplesToShow = 10
-                        println("\n📖 Available chapters:")
+                // Show some available options
+                if (allChapters.isNotEmpty()) {
+                    val samplesToShow = 10
+                    println("\n📖 Available chapters:")
 
-                        // If we have many chapters, show first 5 and last 5
-                        val samples =
-                            if (allChapters.size > samplesToShow) {
-                                allChapters.take(5) + allChapters.takeLast(5)
-                            } else {
-                                allChapters
-                            }
-
-                        samples.forEach { chapter ->
-                            val volumeInfo = chapter.volume?.let { " (Vol. $it)" } ?: ""
-                            println("  • Chapter ${chapter.number}$volumeInfo")
-                        }
-
+                    // If we have many chapters, show first 5 and last 5
+                    val samples =
                         if (allChapters.size > samplesToShow) {
-                            println("  ... and ${allChapters.size - samplesToShow} more")
+                            allChapters.take(5) + allChapters.takeLast(5)
+                        } else {
+                            allChapters
                         }
 
-                        // Show closest matches if user specified a chapter number
-                        request.fromChapter?.let { fromChapter ->
-                            val requestedNum = extractNumber(fromChapter)
-                            val closest =
-                                allChapters
-                                    .map { it to kotlin.math.abs(extractNumber(it.number) - requestedNum) }
-                                    .sortedBy { it.second }
-                                    .take(3)
+                    samples.forEach { chapter ->
+                        val volumeInfo = chapter.volume?.let { " (Vol. $it)" } ?: ""
+                        println("  • Chapter ${chapter.number}$volumeInfo")
+                    }
 
-                            if (closest.isNotEmpty() && closest[0].second > 0) {
-                                println("\n💡 Closest matches:")
-                                closest.forEach { (chapter, _) ->
-                                    val volumeInfo = chapter.volume?.let { " (Vol. $it)" } ?: ""
-                                    println("  • Chapter ${chapter.number}$volumeInfo")
-                                }
+                    if (allChapters.size > samplesToShow) {
+                        println("  ... and ${allChapters.size - samplesToShow} more")
+                    }
+
+                    // Show closest matches if user specified a chapter number
+                    request.fromChapter?.let { fromChapter ->
+                        val requestedNum = extractNumber(fromChapter)
+                        val closest =
+                            allChapters
+                                .map { it to kotlin.math.abs(extractNumber(it.number) - requestedNum) }
+                                .sortedBy { it.second }
+                                .take(3)
+
+                        if (closest.isNotEmpty() && closest[0].second > 0) {
+                            println("\n💡 Closest matches:")
+                            closest.forEach { (chapter, _) ->
+                                val volumeInfo = chapter.volume?.let { " (Vol. $it)" } ?: ""
+                                println("  • Chapter ${chapter.number}$volumeInfo")
                             }
                         }
                     }
-
-                    return DownloadResult(0, 0, 0)
                 }
 
-                logger.info("Found {} chapters to process", chaptersToDownload.size)
+                return DownloadResult(0, 0, 0)
+            }
 
-                dbTracker.use { tracker ->
-                    for (chapter in chaptersToDownload) {
-                        val cId = chapter.id
-                        val cNum = chapter.number
-                        val volume = chapter.volume
+            logger.info("Found {} chapters to process", chaptersToDownload.size)
 
-                        // Standardize existing file naming
-                        if (ChapterNamingUtils.ensureCorrectNaming(
-                                request.outputDir,
-                                request.mangaId,
-                                cId,
-                                cNum,
-                                volume,
-                                withVolume = request.withVolume,
-                            )
-                        ) {
-                            logger.debug("Standardized filename for chapter {}", cNum)
-                        }
+            dbTracker.use { tracker ->
+                for (chapter in chaptersToDownload) {
+                    val cId = chapter.id
+                    val cNum = chapter.number
+                    val volume = chapter.volume
 
-                        // Check if chapter is already downloaded
-                        val existingFile =
-                            ChapterNamingUtils.findExistingFile(
-                                request.outputDir,
-                                cNum,
-                                request.mangaId,
-                                cId,
-                            )
-                        if (existingFile != null || tracker.isDownloaded(request.mangaId, cId)) {
-                            logger.info("Skipping chapter {} (already exists or in database)", cNum)
-                            skippedCount++
-                            continue
-                        }
-
-                        logger.info("Downloading images for {} chapter {}", request.mangaId, cNum)
-                        val images = provider.downloadChapterImages(request.mangaId, cId, tempDir)
-                        if (images.isEmpty()) {
-                            logger.error("No images found or failed to download chapter {}", cNum)
-                            failedCount++
-                            continue
-                        }
-
-                        // Metadata fetching and generation - use actual manga title for better matching
-                        val metadata = getMetadata(request.mangaId, cNum, volume)
-                        val metadataXml =
-                            metadata?.let {
-                                ComicInfoGenerator.generate(it.copy(pageCount = images.size))
-                            }
-
-                        val finalName = ChapterNamingUtils.getFileName(cNum, volume, request.withVolume)
-                        val outputFile = File(request.outputDir, finalName)
-
-                        logger.info("Converting to {}", outputFile.absolutePath)
-                        converter.convertToCbz(images, outputFile, metadataXml)
-                        tracker.markDownloaded(request.mangaId, cId, cNum)
-                        logger.info("Successfully downloaded and converted to {}", outputFile.name)
-                        successCount++
-
-                        tempDir.listFiles()?.forEach { it.delete() }
+                    // Standardize existing file naming
+                    if (ChapterNamingUtils.ensureCorrectNaming(
+                            request.outputDir,
+                            request.mangaId,
+                            cId,
+                            cNum,
+                            volume,
+                            withVolume = request.withVolume,
+                        )
+                    ) {
+                        logger.debug("Standardized filename for chapter {}", cNum)
                     }
+
+                    // Check if chapter is already downloaded
+                    val existingFile =
+                        ChapterNamingUtils.findExistingFile(
+                            request.outputDir,
+                            cNum,
+                            request.mangaId,
+                            cId,
+                        )
+                    if (existingFile != null || tracker.isDownloaded(request.mangaId, cId)) {
+                        logger.info("Skipping chapter {} (already exists or in database)", cNum)
+                        skippedCount++
+                        continue
+                    }
+
+                    logger.info("Downloading images for {} chapter {}", request.mangaId, cNum)
+                    val images = downloadProvider.downloadChapterImages(request.mangaId, cId, tempDir)
+                    if (images.isEmpty()) {
+                        logger.error("No images found or failed to download chapter {}", cNum)
+                        failedCount++
+                        continue
+                    }
+
+                    // Metadata fetching and generation - use actual manga title for better matching
+                    val metadata = getMetadata(request.mangaId, cNum, volume)
+                    val metadataXml =
+                        metadata?.let {
+                            ComicInfoGenerator.generate(it.copy(pageCount = images.size))
+                        }
+
+                    val finalName = ChapterNamingUtils.getFileName(cNum, volume, request.withVolume)
+                    val outputFile = File(request.outputDir, finalName)
+
+                    logger.info("Converting to {}", outputFile.absolutePath)
+                    converter.convertToCbz(images, outputFile, metadataXml)
+                    tracker.markDownloaded(request.mangaId, cId, cNum)
+                    logger.info("Successfully downloaded and converted to {}", outputFile.name)
+                    successCount++
+
+                    tempDir.listFiles()?.forEach { it.delete() }
                 }
             }
         } finally {

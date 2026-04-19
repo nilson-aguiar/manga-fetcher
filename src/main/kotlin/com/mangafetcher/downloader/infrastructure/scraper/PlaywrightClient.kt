@@ -14,8 +14,15 @@ import org.slf4j.LoggerFactory
 class PlaywrightClient(
     useFirefox: Boolean? = null,
 ) : AutoCloseable {
-    private val logger = LoggerFactory.getLogger(PlaywrightClient::class.java)
-    private val playwright: Playwright = Playwright.create()
+    companion object {
+        private val logger = LoggerFactory.getLogger(PlaywrightClient::class.java)
+        
+        // Singleton Playwright instance to avoid starting/stopping the driver process multiple times
+        private val playwrightInstance: Playwright by lazy {
+            logger.info("Creating singleton Playwright instance")
+            Playwright.create()
+        }
+    }
 
     // Allow override via environment variable: PLAYWRIGHT_BROWSER=firefox
     private val shouldUseFirefox = useFirefox ?: (System.getenv("PLAYWRIGHT_BROWSER")?.lowercase() == "firefox")
@@ -23,7 +30,7 @@ class PlaywrightClient(
     private val browser: Browser =
         if (shouldUseFirefox) {
             logger.info("Using Firefox browser")
-            playwright.firefox().launch(
+            playwrightInstance.firefox().launch(
                 BrowserType
                     .LaunchOptions()
                     .setHeadless(true)
@@ -31,7 +38,7 @@ class PlaywrightClient(
             )
         } else {
             logger.info("Using Chromium browser")
-            playwright.chromium().launch(
+            playwrightInstance.chromium().launch(
                 BrowserType
                     .LaunchOptions()
                     .setHeadless(true)
@@ -51,7 +58,6 @@ class PlaywrightClient(
                             "--disable-features=IsolateOrigins,site-per-process,VizDisplayCompositor",
                             // Stability improvements to prevent crashes
                             "--no-zygote",
-                            "--single-process",
                             "--disable-accelerated-2d-canvas",
                             "--disable-crash-reporter",
                             "--disable-site-isolation-trials",
@@ -181,6 +187,6 @@ class PlaywrightClient(
     override fun close() {
         context.close()
         browser.close()
-        playwright.close()
+        // We DO NOT close playwrightInstance here because it's a shared singleton
     }
 }

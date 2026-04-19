@@ -4,8 +4,7 @@ A CLI tool to download manga chapters and convert them to `.cbz` format.
 
 ## Prerequisites
 
-- JDK 24+
-- (Optional) GraalVM with `native-image` for native builds.
+- JDK 25+
 
 ## Quick Start
 
@@ -26,16 +25,6 @@ Download a chapter (example):
 ```bash
 ./gradlew run --args="download solo-leveling -c 00 -o downloads"
 ```
-
-## Native Binary
-
-To build a native binary:
-
-```bash
-./gradlew nativeCompile
-```
-
-The binary will be located at `build/native/nativeCompile/manga-fetcher`.
 
 ## Commands
 

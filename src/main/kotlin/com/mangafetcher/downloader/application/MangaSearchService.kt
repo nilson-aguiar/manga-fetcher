@@ -6,6 +6,10 @@ import com.mangafetcher.downloader.infrastructure.scraper.MangaResult
 
 class MangaSearchService(
     private val scraper: MangaScraperPort = MangaLivreScraper(),
-) {
-    fun search(title: String): List<MangaResult> = scraper.use { it.search(title) }
+) : AutoCloseable {
+    fun search(title: String): List<MangaResult> = scraper.search(title)
+    
+    override fun close() {
+        scraper.close()
+    }
 }

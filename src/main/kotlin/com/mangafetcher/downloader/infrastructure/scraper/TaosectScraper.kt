@@ -10,21 +10,18 @@ import java.io.File
  * Taosect web scraper - coordinator for Taosect manga site scraping.
  * Uses PlaywrightClient for browser operations, TaosectHtmlParser for parsing,
  * and ImageDownloader for downloads.
- *
- * URL Structure:
- * - Manga page: https://taosect.com/manga/{manga-id}/
- * - Chapter reader: https://taosect.com/leitor-online/projeto/{manga-id}/{chapter-id}/
- * - Search: https://taosect.com/?s={query}
  */
 class TaosectScraper(
     private val baseUrl: String = "https://taosect.com",
-    private val playwrightClient: PlaywrightClient = PlaywrightClient(),
+    playwrightClient: PlaywrightClient? = null,
     private val htmlParser: TaosectHtmlParser = TaosectHtmlParser(),
-    private val imageDownloader: TaosectImageDownloader = TaosectImageDownloader(playwrightClient, htmlParser),
 ) : MangaScraperPort,
     MangaMetadataProvider,
     AutoCloseable {
     private val logger = LoggerFactory.getLogger(TaosectScraper::class.java)
+    private val ownClient = playwrightClient == null
+    private val playwrightClient: PlaywrightClient = playwrightClient ?: PlaywrightClient()
+    private val imageDownloader: TaosectImageDownloader = TaosectImageDownloader(this.playwrightClient, htmlParser)
 
     // Cache HTML for manga pages to avoid fetching twice
     private val htmlCache = mutableMapOf<String, String>()
@@ -91,14 +88,12 @@ class TaosectScraper(
 
     /**
      * Parses chapter number string to Double for sorting.
-     * Handles formats like: "01", "8.5", "98v2", "100.1v2", "107 e 108", "201V3"
      */
     private fun parseChapterNumber(chapterNumber: String): Double {
-        // Extract the numeric part before any version suffix (v2, v3, etc.) or text
         val numericPart =
             chapterNumber
-                .replace(Regex("[vV]\\d+"), "") // Remove version suffixes like v2, V3
-                .replace(Regex("\\s+e\\s+.*"), "") // Remove " e ..." parts
+                .replace(Regex("[vV]\\d+"), "")
+                .replace(Regex("\\s+e\\s+.*"), "")
                 .trim()
 
         return numericPart.toDoubleOrNull() ?: 0.0
@@ -156,6 +151,8 @@ class TaosectScraper(
     ): List<File> = imageDownloader.downloadChapterImages(baseUrl, mangaId, chapterId, outputDir)
 
     override fun close() {
-        playwrightClient.close()
+        if (ownClient) {
+            playwrightClient.close()
+        }
     }
 }

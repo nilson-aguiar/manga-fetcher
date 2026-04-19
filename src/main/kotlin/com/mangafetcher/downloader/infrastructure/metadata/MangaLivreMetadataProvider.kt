@@ -9,9 +9,12 @@ import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
  * Delegates to MangaLivreScraper for metadata fetching.
  */
 class MangaLivreMetadataProvider(
-    private val scraper: MangaLivreScraper = MangaLivreScraper(),
+    scraper: MangaLivreScraper? = null,
 ) : MangaMetadataProvider,
     AutoCloseable {
+    private val ownScraper = scraper == null
+    private val scraper: MangaLivreScraper = scraper ?: MangaLivreScraper()
+
     override fun getMetadata(
         title: String,
         chapter: String?,
@@ -19,6 +22,8 @@ class MangaLivreMetadataProvider(
     ): MangaMetadata? = scraper.getMetadata(title, chapter, volume)
 
     override fun close() {
-        scraper.close()
+        if (ownScraper) {
+            scraper.close()
+        }
     }
 }

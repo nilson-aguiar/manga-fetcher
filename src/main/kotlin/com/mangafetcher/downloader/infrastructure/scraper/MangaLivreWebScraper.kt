@@ -31,12 +31,14 @@ data class MangaDetails(
  */
 class MangaLivreScraper(
     private val baseUrl: String = "https://mangalivre.to",
-    private val playwrightClient: PlaywrightClient = PlaywrightClient(),
+    playwrightClient: PlaywrightClient? = null,
     private val htmlParser: HtmlParser = HtmlParser(),
-    private val imageDownloader: ImageDownloader = ImageDownloader(playwrightClient, htmlParser),
 ) : MangaScraperPort,
     MangaMetadataProvider,
     AutoCloseable {
+    private val ownClient = playwrightClient == null
+    private val playwrightClient: PlaywrightClient = playwrightClient ?: PlaywrightClient()
+    private val imageDownloader: ImageDownloader = ImageDownloader(this.playwrightClient, htmlParser)
     private val logger = org.slf4j.LoggerFactory.getLogger(MangaLivreScraper::class.java)
 
     override fun getMetadata(
@@ -94,6 +96,8 @@ class MangaLivreScraper(
     ): List<File> = imageDownloader.downloadChapterImages(baseUrl, mangaId, chapterId, outputDir)
 
     override fun close() {
-        playwrightClient.close()
+        if (ownClient) {
+            playwrightClient.close()
+        }
     }
 }

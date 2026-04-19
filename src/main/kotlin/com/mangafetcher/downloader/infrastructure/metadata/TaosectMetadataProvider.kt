@@ -4,7 +4,6 @@ import com.mangafetcher.downloader.domain.model.MangaMetadata
 import com.mangafetcher.downloader.domain.model.MangaMetadataProvider
 import com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient
 import com.mangafetcher.downloader.infrastructure.scraper.TaosectHtmlParser
-import com.mangafetcher.downloader.infrastructure.scraper.TaosectImageDownloader
 import com.mangafetcher.downloader.infrastructure.scraper.TaosectScraper
 
 /**
@@ -19,8 +18,7 @@ class TaosectMetadataProvider(
     private val client: PlaywrightClient = sharedPlaywrightClient ?: PlaywrightClient()
     private val isClientOwned = sharedPlaywrightClient == null
     private val htmlParser = TaosectHtmlParser()
-    private val imageDownloader = TaosectImageDownloader(client, htmlParser)
-    private val scraper = TaosectScraper(baseUrl, client, htmlParser, imageDownloader)
+    private val scraper = TaosectScraper(baseUrl, client, htmlParser)
 
     override fun getMetadata(
         title: String,
@@ -31,7 +29,7 @@ class TaosectMetadataProvider(
     override fun close() {
         // Only close the client if we own it (not shared)
         if (isClientOwned) {
-            scraper.close()
+            client.close()
         }
     }
 }

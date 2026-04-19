@@ -2,7 +2,7 @@
 FROM eclipse-temurin:25-jre-jammy AS jre
 
 # Stage 2: Final minimal image with Playwright dependencies and Java
-FROM mcr.microsoft.com/playwright:v1.44.0-jammy
+FROM mcr.microsoft.com/playwright:v1.49.0-jammy
 
 # Copy the JRE from the eclipse-temurin image
 COPY --from=jre /opt/java/openjdk /opt/java/openjdk

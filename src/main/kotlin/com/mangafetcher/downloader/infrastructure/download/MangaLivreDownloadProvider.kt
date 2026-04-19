@@ -15,17 +15,14 @@ import java.io.File
  */
 class MangaLivreDownloadProvider(
     private val baseUrl: String = "https://mangalivre.to",
-    private val scraper: MangaLivreScraper =
-        run {
-            val client = PlaywrightClient()
-            MangaLivreScraper(baseUrl, client, HtmlParser(), ImageDownloader(client, HtmlParser()))
-        },
-    private val imageDownloader: ImageDownloader =
-        run {
-            val client = PlaywrightClient()
-            ImageDownloader(client, HtmlParser())
-        },
+    playwrightClient: PlaywrightClient? = null,
+    htmlParser: HtmlParser = HtmlParser(),
 ) : MangaDownloadProvider {
+    private val ownClient = playwrightClient == null
+    private val playwrightClient: PlaywrightClient = playwrightClient ?: PlaywrightClient()
+    private val scraper: MangaLivreScraper = MangaLivreScraper(baseUrl, this.playwrightClient, htmlParser)
+    private val imageDownloader: ImageDownloader = ImageDownloader(this.playwrightClient, htmlParser)
+
     override fun fetchMangaDetails(mangaId: String): MangaDetails = scraper.fetchMangaDetails(mangaId)
 
     override fun fetchChapters(mangaId: String): List<ChapterResult> = scraper.fetchChapters(mangaId)
@@ -44,6 +41,8 @@ class MangaLivreDownloadProvider(
     }
 
     override fun close() {
-        scraper.close()
+        if (ownClient) {
+            playwrightClient.close()
+        }
     }
 }
