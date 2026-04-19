@@ -121,6 +121,9 @@ class TaosectHtmlParser {
         val doc = Jsoup.parse(html)
 
         val title = doc.select("h1.titulo-projeto").text().trim()
+        if (title.isEmpty()) {
+            println("DEBUG: Title is empty! HTML body starts with: ${doc.body().text().take(200)}")
+        }
 
         // Extract metadata from the info table
         val table = doc.select("table.tabela-projeto tr")
