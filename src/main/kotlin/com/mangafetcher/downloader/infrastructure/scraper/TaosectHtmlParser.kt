@@ -20,7 +20,7 @@ class TaosectHtmlParser {
         // Search results typically use post-title links
         return doc.select(".post-title a, .projeto-titulo a").map { element ->
             val mangaTitle = element.text().trim()
-            val href = element.attr("href").removeSuffix("/")
+            val href = element.attr("href").trimEnd('/')
             // Extract manga ID from URLs like /manga/one-punch-man/ or /projeto/one-punch-man/
             val id = href.substringAfterLast("/")
             MangaResult(mangaTitle, id)
@@ -50,21 +50,15 @@ class TaosectHtmlParser {
         logger.debug("Found {} chapter links to parse", elements.size)
 
         elements.forEach { element ->
-            val href = element.attr("href")
+            val href = element.attr("href").substringBefore("#").trimEnd('/')
 
             // Extract chapterId from href - handle both relative and absolute URLs
             val chapterId =
                 if (href.contains("/leitor-online/projeto/")) {
                     // Extract from URL like: /leitor-online/projeto/{manga-id}/{chapter-id}/ or full URL
-                    val pathAfterProjeto =
-                        href
-                            .substringAfter("/leitor-online/projeto/")
-                            .removeSuffix("/")
-                            .substringBefore("#") // Remove anchor fragments
-                            .substringAfter("/") // Get chapter-id part after manga-id
-                    pathAfterProjeto
+                    href.substringAfter("/leitor-online/projeto/").substringAfter("/")
                 } else {
-                    href.substringAfterLast("/").removeSuffix("/").substringBefore("#")
+                    href.substringAfterLast("/")
                 }
 
             // Skip invalid chapter IDs
@@ -73,7 +67,7 @@ class TaosectHtmlParser {
             }
 
             // Extract chapter number from the chapterId (most reliable source)
-            val number =
+            var number =
                 when {
                     // Extract from chapterId with standard format
                     chapterId.contains("cap-tulo-") -> {
@@ -96,6 +90,14 @@ class TaosectHtmlParser {
                         }
                     }
                 }
+
+            // Clean number: extract only the leading numeric part (including decimal)
+            // This handles cases like 104v2.e.105, 120v2, 167/ etc.
+            val numberRegex = Regex("""^(\d+(\.\d+)?)""")
+            val match = numberRegex.find(number)
+            if (match != null) {
+                number = match.value
+            }
 
             // Final validation: skip if number looks like a URL
             if (number.contains("://")) {
