@@ -1,8 +1,0 @@
-{
-  "track_id": "github-actions-build-docker_20260412",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-04-12T10:00:00Z",
-  "updated_at": "2026-04-12T10:00:00Z",
-  "description": "plan github actions that builds the app and generates a docker image"
-}
