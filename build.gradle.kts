@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.3.20"
-    kotlin("kapt") version "2.3.20"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.20"
+    kotlin("jvm") version "2.3.21"
+    kotlin("kapt") version "2.3.21"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.21"
     application
     jacoco
 }
@@ -28,7 +28,7 @@ dependencies {
     kapt("info.picocli:picocli-codegen:4.7.7")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("com.microsoft.playwright:playwright:1.59.0")
-    implementation("org.jsoup:jsoup:1.22.1")
+    implementation("org.jsoup:jsoup:1.22.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.xerial:sqlite-jdbc:3.53.0.0")
