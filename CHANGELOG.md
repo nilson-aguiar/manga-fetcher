@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.3.0...v1.3.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([fcc7882](https://github.com/nilson-aguiar/manga-fetcher/commit/fcc78829c4c459af6898eddfd0887a71f0e6448e))
+* **deps:** update all non-major dependencies ([7e46677](https://github.com/nilson-aguiar/manga-fetcher/commit/7e4667724c033d24c75eeaaaf3fa53c9acb1f7b3))
+
 ## [1.3.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.2.0...v1.3.0) (2026-04-19)
 
 
