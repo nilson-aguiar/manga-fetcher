@@ -114,6 +114,28 @@ class TaosectScraperIT {
     }
 
     @Test
+    fun `should download chapter images for One Punch Man chapter 238`() {
+        val tempDir =
+            kotlin.io.path
+                .createTempDirectory("taosect-test-238")
+                .toFile()
+
+        try {
+            val images = scraper.downloadImages("one-punch-man", "cap-tulo-238", tempDir)
+
+            assertTrue(images.isNotEmpty())
+            assertTrue(images.size > 10)
+
+            images.forEach { file ->
+                assertTrue(file.exists())
+                assertTrue(file.length() > 0)
+            }
+        } finally {
+            tempDir.deleteRecursively()
+        }
+    }
+
+    @Test
     fun `should not hang when fetching details and chapters sequentially`() {
         val mangaId = "one-punch-man"
         val startTime = System.currentTimeMillis()

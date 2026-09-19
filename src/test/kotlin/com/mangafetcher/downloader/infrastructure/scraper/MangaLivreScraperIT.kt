@@ -53,4 +53,31 @@ class MangaLivreScraperIT {
             tempDir.deleteRecursively()
         }
     }
+
+    @Test
+    fun `should search for berserk on real site`() {
+        val results = scraper.search("berserk")
+
+        assertTrue(results.isNotEmpty(), "Should find at least one result for 'solo leveling'")
+        val berserk =
+            results.find { it.title.contains("Berserk", ignoreCase = true) }
+                ?: throw AssertionError("Could not find manga in results: ${results.map { it.title }}")
+
+        val chapters = scraper.fetchChapters(berserk.id)
+        assertTrue(chapters.isNotEmpty(), "Should find at least one chapter for 'solo leveling'")
+
+        val tempDir =
+            java.nio.file.Files
+                .createTempDirectory("scraper-it")
+                .toFile()
+        try {
+            val firstChapter = chapters.last() // Usually last is the first chapter in Madara
+            val images = scraper.downloadImages(berserk.id, firstChapter.id, tempDir)
+            assertTrue(images.isNotEmpty(), "Should download at least one image for first chapter")
+            assertTrue(images[0].exists(), "Image file should exist")
+            assertTrue(images[0].length() > 0, "Image file should not be empty")
+        } finally {
+            tempDir.deleteRecursively()
+        }
+    }
 }
