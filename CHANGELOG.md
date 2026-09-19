@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.2](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.3.1...v1.3.2) (2026-09-19)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([7785cf9](https://github.com/nilson-aguiar/manga-fetcher/commit/7785cf94b8f950f356d1111dcd96d824aca91144))
+* **deps:** update all non-major dependencies ([88124c7](https://github.com/nilson-aguiar/manga-fetcher/commit/88124c7c032eb52b7f5f8df490ceb200364ef5f8))
+* extract Taosect image urls from javascript array ([49f03ad](https://github.com/nilson-aguiar/manga-fetcher/commit/49f03adbff276d440c84270fcdfbc7c3f808ffa9))
+
 ## [1.3.1](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.3.0...v1.3.1) (2026-08-31)
 
 
