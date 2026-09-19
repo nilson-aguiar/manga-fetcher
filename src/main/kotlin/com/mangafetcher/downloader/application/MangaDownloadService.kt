@@ -77,7 +77,7 @@ class MangaDownloadService(
                     allChapters,
                     request.chapterNumber,
                     request.fromChapter,
-                ).reversed() //Reversed to ensure the list is sorted from newest to oldest
+                )
 
             if (chaptersToDownload.isEmpty()) {
                 val requested = request.chapterNumber ?: request.fromChapter ?: "unknown"
