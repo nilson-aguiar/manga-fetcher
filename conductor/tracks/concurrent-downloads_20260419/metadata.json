@@ -1,0 +1,8 @@
+{
+  "track_id": "concurrent-downloads_20260419",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-04-19T10:00:00Z",
+  "updated_at": "2026-04-19T10:00:00Z",
+  "description": "Parallel image downloads using Kotlin Coroutines and optimized HTTP client"
+}

@@ -77,7 +77,7 @@ class MangaDownloadService(
                     allChapters,
                     request.chapterNumber,
                     request.fromChapter,
-                )
+                ).reversed() //Reversed to ensure the list is sorted from newest to oldest
 
             if (chaptersToDownload.isEmpty()) {
                 val requested = request.chapterNumber ?: request.fromChapter ?: "unknown"
@@ -132,10 +132,7 @@ class MangaDownloadService(
             logger.info("Found {} chapters to process", chaptersToDownload.size)
 
             dbTracker.use { tracker ->
-                for (chapter in chaptersToDownload) {
-                    val cId = chapter.id
-                    val cNum = chapter.number
-                    val volume = chapter.volume
+                for ((cNum, cId, volume) in chaptersToDownload) {
 
                     // Standardize existing file naming
                     if (ChapterNamingUtils.ensureCorrectNaming(

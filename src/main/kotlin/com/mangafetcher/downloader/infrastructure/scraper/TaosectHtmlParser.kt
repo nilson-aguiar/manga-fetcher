@@ -232,6 +232,19 @@ class TaosectHtmlParser {
      * Taosect uses img tags with class "pagina_capitulo" for chapter images.
      */
     fun extractImageUrls(html: String): List<String> {
+        // Taosect reader stores the image URLs in a JS array `var paginas = [...]`
+        val paginasRegex = Regex("""var\s+paginas\s*=\s*\[(.*?)\]""", RegexOption.DOT_MATCHES_ALL)
+        val match = paginasRegex.find(html)
+        if (match != null) {
+            val arrayContent = match.groupValues[1]
+            val urlRegex = Regex(""""([^"]+)"""")
+            val urls = urlRegex.findAll(arrayContent).map { it.groupValues[1] }.toList()
+            if (urls.isNotEmpty()) {
+                return urls.map { it.replace("\\/", "/") }
+            }
+        }
+
+        // Fallback to DOM parsing if the JS array is not found or empty
         val doc = Jsoup.parse(html)
         // Taosect chapter images have class "pagina_capitulo"
         val imageElements = doc.select("img.pagina_capitulo")
