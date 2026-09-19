@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.3.2...v1.3.3) (2026-09-19)
+
+
+### Bug Fixes
+
+* rollback reverse ([e277a71](https://github.com/nilson-aguiar/manga-fetcher/commit/e277a716e743d756273d1f21796ae90221b90441))
+
 ## [1.3.2](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.3.1...v1.3.2) (2026-09-19)
 
 
