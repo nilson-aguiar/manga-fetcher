@@ -106,6 +106,14 @@ On Windows (PowerShell):
 
 - `TZ` - Timezone (default: UTC)
 - `PLAYWRIGHT_BROWSERS_PATH` - Browser cache location (pre-installed in image)
+- `JAVA_TOOL_OPTIONS` - Additional JVM options (default: `-XX:MaxRAMPercentage=33.0 -XX:+ExitOnOutOfMemoryError`)
+
+## Memory Sizing & Resource Recommendations
+
+- **Recommended Container Memory:** `1.5 GB` to `2.0 GB` (e.g. `docker run -m 2g ...` or `mem_limit: 2g`).
+- **Memory Allocation:**
+  - JVM Heap is set to **33%** of container memory (`-XX:MaxRAMPercentage=33.0`).
+  - The remaining 67% of memory provides the necessary headroom for the out-of-process headless Chromium browser (Playwright), JVM Metaspace/native memory, and SQLite operations without triggering container OOM kills (exit code 137).
 
 ## Image Size
 

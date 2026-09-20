@@ -8,6 +8,10 @@ plugins {
 
 application {
     mainClass.set("com.mangafetcher.downloader.cli.DownloaderApplicationKt")
+    applicationDefaultJvmArgs = listOf(
+        "-XX:MaxRAMPercentage=33.0",
+        "-XX:+ExitOnOutOfMemoryError"
+    )
 }
 
 group = "com.mangafetcher"

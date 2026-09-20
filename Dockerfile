@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/playwright:v1.63.0-jammy
 COPY --from=jre /opt/java/openjdk /opt/java/openjdk
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=33.0 -XX:+ExitOnOutOfMemoryError"
 
 # Set working directory
 WORKDIR /app
