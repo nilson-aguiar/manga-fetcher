@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.3.3...v1.4.0) (2026-09-20)
+
+
+### Features
+
+* improve memory set ([19ac7cb](https://github.com/nilson-aguiar/manga-fetcher/commit/19ac7cb3195161b02dd0d2dfc97c471c7e2d2a8b))
+
 ## [1.3.3](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.3.2...v1.3.3) (2026-09-19)
 
 
