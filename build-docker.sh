@@ -24,7 +24,7 @@ echo '  docker run --rm manga-fetcher:latest search "one punch man"'
 echo ""
 echo "Download manga (example):"
 echo '  docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \'
-echo '    download one-punch-man 1-3'
+echo '    download one-punch-man -c 1 -o /app/downloads'
 echo ""
 echo "Or use docker-compose:"
 echo "  docker-compose run --rm manga-fetcher --help"

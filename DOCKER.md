@@ -14,7 +14,7 @@ docker run --rm manga-fetcher:latest search "one punch man"
 
 # Download manga example
 docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
-  download one-punch-man 1-3
+  download one-punch-man -c 1 -o /app/downloads
 ```
 
 ## Using Docker Compose
@@ -26,7 +26,7 @@ docker-compose build
 # Run commands
 docker-compose run --rm manga-fetcher --help
 docker-compose run --rm manga-fetcher search "one punch man"
-docker-compose run --rm manga-fetcher download one-punch-man 1-3
+docker-compose run --rm manga-fetcher download one-punch-man -c 1 -o /app/downloads
 
 # Check downloaded files
 ls -la downloads/
@@ -36,7 +36,7 @@ ls -la downloads/
 
 ### Search for Manga
 ```bash
-docker run --rm manga-fetcher:latest search "<title>"
+docker run --rm manga-fetcher:latest search "<title>" [-p <provider>]
 ```
 
 Example:
@@ -47,34 +47,46 @@ docker run --rm manga-fetcher:latest search "one punch man"
 ### Download Manga
 ```bash
 docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
-  download <manga-id> <chapter-range>
+  download <manga-id> (-c <chapter> | --from <chapter>) [-o <output-dir>] [--with-volume] [-p <provider>]
 ```
 
 Examples:
 ```bash
-# Download chapters 1-10
+# Download a specific chapter
 docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
-  download one-punch-man 1-10
+  download one-punch-man -c 1 -o /app/downloads
 
-# Download all chapters
+# Download all chapters starting from chapter 10
 docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
-  download one-punch-man all
+  download one-punch-man --from 10 -o /app/downloads
 
-# Download specific chapters
+# Download with volume in filename
 docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
-  download one-punch-man 1,5,10
+  download one-punch-man -c 1 --with-volume -o /app/downloads
 ```
 
 ### Rename Chapters
 ```bash
 docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
-  rename <input-directory>
+  rename <manga-id> [-o <output-dir>]
 ```
 
 Example:
 ```bash
 docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
-  rename /app/downloads/one-punch-man
+  rename one-punch-man -o /app/downloads
+```
+
+### Check Database Integrity
+```bash
+docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
+  check [-o <output-dir>] [-d]
+```
+
+Example:
+```bash
+docker run --rm -v $(pwd)/downloads:/app/downloads manga-fetcher:latest \
+  check -o /app/downloads -d
 ```
 
 ## Volume Mounts

@@ -2,6 +2,18 @@
 
 A powerful command-line interface tool for downloading manga chapters from various providers and converting them into `.cbz` format, optimized for e-readers and tablet viewing.
 
+<!-- CODEGRAPH_START -->
+## CodeGraph
+
+In repositories indexed by CodeGraph (a `.codegraph/` directory exists at the repo root), reach for it BEFORE grep/find or reading files when you need to understand or locate code:
+
+- **MCP tool** (when available): `codegraph_explore` answers most code questions in one call — the relevant symbols' verbatim source plus the call paths between them, including dynamic-dispatch hops grep can't follow. Name a file or symbol in the query to read its current line-numbered source. If it's listed but deferred, load it by name via tool search.
+- **Shell** (always works): `codegraph explore "<symbol names or question>"` prints the same output.
+
+If there is no `.codegraph/` directory, skip CodeGraph entirely — indexing is the user's decision.
+<!-- CODEGRAPH_END -->
+
+
 ## Project Overview
 
 - **Purpose:** Automate the process of searching, downloading, and converting manga chapters to high-quality CBZ files.
@@ -21,14 +33,14 @@ A powerful command-line interface tool for downloading manga chapters from vario
 ### Development Commands
 - **Build the project:** `./gradlew build`
 - **Run the application:** `./gradlew run --args="<command> <options>"`
-- **Run tests:** `./gradlew test` (Use `-PexcludeTags=it` to skip integration tests)
+- **Run tests:** `./gradlew test` (Use `-PexcludeTags=integration` to skip integration tests)
 - **Code style:** Adheres to standard Kotlin conventions (standard Gradle check tasks apply).
 
 ### Key Commands (CLI)
 - **Search:** `search <title> [-p provider]` (Providers: `mangalivre`, `taosect`)
-- **Download:** `download <mangaId> [-c chapter] [--from chapter] [-o outputDir] [--with-volume]`
+- **Download:** `download <mangaId> (-c <chapter> | --from <chapter>) [-o outputDir] [--with-volume] [-p provider]` (Providers: `composite` (default), `mangalivre`, `taosect`)
 - **Rename:** `rename <mangaId> [-o outputDir]` (Retroactively adds volume info to filenames)
-- **Check:** `check [-o outputDir] [-d]` (Verifies database entries against local files)
+- **Check:** `check [-o outputDir] [-d]` (Verifies database entries against local files; `-d`/`--delete-missing` deletes entries without prompt)
 
 ## Docker Support
 The project includes a `Dockerfile` and `docker-compose.yml` for isolated execution.
@@ -38,14 +50,15 @@ The project includes a `Dockerfile` and `docker-compose.yml` for isolated execut
 ## Project Structure & Conventions
 
 - **`src/main/kotlin/com/mangafetcher/downloader/`**
-    - **`domain/`**: Core models (`model`) and interface definitions (`port`).
+    - **`domain/`**: Core models (`model`), interface definitions (`port`), and domain utilities (`service`).
     - **`application/`**: Orchestration services that implement use cases.
     - **`infrastructure/`**: Concrete implementations of ports:
         - `scraper/`: Provider-specific scraping logic (Playwright/Jsoup).
         - `download/`: Adapters for downloading images.
         - `conversion/`: Logic for CBZ creation and ComicInfo.xml metadata generation.
         - `persistence/`: SQLite repository implementation.
-        - `metadata/`: External metadata fetching (e.g., MangaDex).
+        - `metadata/`: Metadata fetching (Composite, MangaDex, MangaLivre, Taosect).
+        - `http/`: Resilient HTTP client with retry and rate-limiting support.
     - **`cli/`**: Picocli command definitions and application entry point.
 
 ### Development Conventions
