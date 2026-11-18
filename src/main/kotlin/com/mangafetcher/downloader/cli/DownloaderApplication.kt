@@ -7,9 +7,11 @@ import com.mangafetcher.downloader.domain.port.MangaDownloadProvider
 import com.mangafetcher.downloader.domain.port.MangaScraperPort
 import com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider
 import com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider
+import com.mangafetcher.downloader.infrastructure.download.TavernaDownloadProvider
 import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
 import com.mangafetcher.downloader.infrastructure.scraper.PlaywrightClient
 import com.mangafetcher.downloader.infrastructure.scraper.TaosectScraper
+import com.mangafetcher.downloader.infrastructure.scraper.TavernaScraper
 import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.Command
@@ -76,8 +78,16 @@ class RenameCommand : Callable<Int> {
     @CommandLine.Option(names = ["-o", "--output", "--output-dir"], description = ["Output directory"], defaultValue = ".")
     lateinit var output: String
 
+    @CommandLine.Option(
+        names = ["-p", "--provider"],
+        description = ["Provider to use: mangalivre, taosect, taverna"],
+        defaultValue = "mangalivre",
+    )
+    lateinit var provider: String
+
     override fun call(): Int {
-        val service = ChapterRenameService()
+        val scraper = createScraperForProvider(provider)
+        val service = ChapterRenameService(scraper = scraper)
 
         return try {
             val outputDir = File(output)
@@ -103,7 +113,7 @@ class SearchCommand : Callable<Int> {
 
     @CommandLine.Option(
         names = ["-p", "--provider"],
-        description = ["Search provider to use: mangalivre, taosect"],
+        description = ["Search provider to use: mangalivre, taosect, taverna"],
         defaultValue = "mangalivre",
     )
     lateinit var provider: String
@@ -128,21 +138,27 @@ class SearchCommand : Callable<Int> {
         }
     }
 
-    private fun createScraper(providerName: String): MangaScraperPort =
-        when (providerName.lowercase()) {
-            "mangalivre" -> {
-                MangaLivreScraper()
-            }
-
-            "taosect" -> {
-                TaosectScraper()
-            }
-
-            else -> {
-                throw IllegalArgumentException("Unknown provider: $providerName. Valid options: mangalivre, taosect")
-            }
-        }
+    private fun createScraper(providerName: String): MangaScraperPort = createScraperForProvider(providerName)
 }
+
+internal fun createScraperForProvider(providerName: String): MangaScraperPort =
+    when (providerName.lowercase()) {
+        "mangalivre" -> {
+            MangaLivreScraper()
+        }
+
+        "taosect" -> {
+            TaosectScraper()
+        }
+
+        "taverna", "tavernadequadrinhos" -> {
+            TavernaScraper()
+        }
+
+        else -> {
+            throw IllegalArgumentException("Unknown provider: $providerName. Valid options: mangalivre, taosect, taverna")
+        }
+    }
 
 @Command(name = "download", description = ["Download chapters of a manga"])
 class DownloadCommand : Callable<Int> {
@@ -170,7 +186,7 @@ class DownloadCommand : Callable<Int> {
 
     @CommandLine.Option(
         names = ["-p", "--provider"],
-        description = ["Download provider to use: composite, mangalivre, taosect"],
+        description = ["Download provider to use: composite, mangalivre, taosect, taverna"],
         defaultValue = "composite",
     )
     lateinit var provider: String
@@ -225,18 +241,27 @@ class DownloadCommand : Callable<Int> {
                         TaosectDownloadProvider(
                             sharedPlaywrightClient = sharedClient,
                         ),
+                        TavernaDownloadProvider(
+                            sharedPlaywrightClient = sharedClient,
+                        ),
                     ),
                 )
             }
 
-            "mangalivre" -> MangaLivreDownloadProvider(playwrightClient = sharedClient)
+            "mangalivre" -> {
+                MangaLivreDownloadProvider(playwrightClient = sharedClient)
+            }
 
+            "taosect" -> {
+                TaosectDownloadProvider(sharedPlaywrightClient = sharedClient)
+            }
 
-            "taosect" -> TaosectDownloadProvider(sharedPlaywrightClient = sharedClient)
-
+            "taverna", "tavernadequadrinhos" -> {
+                TavernaDownloadProvider(sharedPlaywrightClient = sharedClient)
+            }
 
             else -> {
-                throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect")
+                throw IllegalArgumentException("Unknown provider: $providerName. Valid options: composite, mangalivre, taosect, taverna")
             }
         }
 }

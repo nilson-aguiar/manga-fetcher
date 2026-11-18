@@ -11,6 +11,7 @@ A command-line tool for searching and downloading manga chapters, converting the
 - **Multiple Providers Supported:**
   - `mangalivre`
   - `taosect`
+  - `taverna` (Taverna de Quadrinhos, including MediaFire `.cbr`/`.cbz` download & extraction)
   - `composite` (default for downloads; tries providers sequentially to locate chapters)
 - **Catch-up Downloads:** Download individual chapters or fetch all chapters starting from a specific chapter index (`--from`).
 - **Volume Awareness:** Support for formatting chapter files with volume numbers (`--with-volume`) or retroactively updating existing libraries (`rename`).
@@ -91,7 +92,7 @@ manga-fetcher search "<title>" [-p <provider>]
 ```
 
 - `<title>`: Search query.
-- `-p, --provider`: Provider to search on (`mangalivre`, `taosect`). Defaults to `mangalivre`.
+- `-p, --provider`: Provider to search on (`mangalivre`, `taosect`, `taverna`). Defaults to `mangalivre`.
 
 **Example:**
 ```bash
@@ -116,7 +117,7 @@ manga-fetcher download <mangaId> (-c <chapter> | --from <chapter>) [options]
 #### Options
 - `-o, --output, --output-dir <path>`: Directory to save `.cbz` files and `download.db`. Defaults to current directory (`.`).
 - `--with-volume`: Include volume prefix in filenames when available (e.g., `Vol. 1 Ch. 1.cbz`).
-- `-p, --provider <provider>`: Provider to use (`composite`, `mangalivre`, `taosect`). Defaults to `composite`.
+- `-p, --provider <provider>`: Provider to use (`composite`, `mangalivre`, `taosect`, `taverna`). Defaults to `composite`.
 
 **Examples:**
 ```bash

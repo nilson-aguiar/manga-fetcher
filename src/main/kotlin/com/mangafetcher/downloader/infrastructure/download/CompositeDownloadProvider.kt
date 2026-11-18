@@ -15,13 +15,21 @@ class CompositeDownloadProvider(
     AutoCloseable {
     override fun fetchMangaDetails(mangaId: String): MangaDetails {
         var lastException: Exception? = null
+        var lastEmptyDetails: MangaDetails? = null
         for (provider in providers) {
             try {
-                return provider.fetchMangaDetails(mangaId)
+                val details = provider.fetchMangaDetails(mangaId)
+                if (details.title.isNotBlank()) {
+                    return details
+                }
+                lastEmptyDetails = details
             } catch (e: Exception) {
                 lastException = e
                 continue
             }
+        }
+        if (lastEmptyDetails != null) {
+            return lastEmptyDetails
         }
         throw lastException ?: IllegalStateException("No providers available")
     }

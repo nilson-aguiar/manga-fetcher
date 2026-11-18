@@ -28,7 +28,7 @@ Download a chapter (example):
 
 ## Commands
 
-- `search <title> [-p <provider>]`: Search for manga (providers: `mangalivre`, `taosect`).
+- `search <title> [-p <provider>]`: Search for manga (providers: `mangalivre`, `taosect`, `taverna`).
 - `download <mangaId> (-c <chapterNumber> | --from <chapterNumber>) [-o <outputDir>] [--with-volume] [-p <provider>]`: Download chapters and convert them to CBZ.
-- `rename <mangaId> [-o <outputDir>]`: Retroactively rename CBZ files to include volume information.
+- `rename <mangaId> [-o <outputDir>] [-p <provider>]`: Retroactively rename CBZ files to include volume information.
 - `check [-o <outputDir>] [-d]`: Verify database entries against existing files (`-d` / `--delete-missing` auto-deletes orphaned records).

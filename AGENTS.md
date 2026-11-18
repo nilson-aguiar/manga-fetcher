@@ -37,9 +37,9 @@ If there is no `.codegraph/` directory, skip CodeGraph entirely — indexing is 
 - **Code style:** Adheres to standard Kotlin conventions (standard Gradle check tasks apply).
 
 ### Key Commands (CLI)
-- **Search:** `search <title> [-p provider]` (Providers: `mangalivre`, `taosect`)
-- **Download:** `download <mangaId> (-c <chapter> | --from <chapter>) [-o outputDir] [--with-volume] [-p provider]` (Providers: `composite` (default), `mangalivre`, `taosect`)
-- **Rename:** `rename <mangaId> [-o outputDir]` (Retroactively adds volume info to filenames)
+- **Search:** `search <title> [-p provider]` (Providers: `mangalivre`, `taosect`, `taverna`)
+- **Download:** `download <mangaId> (-c <chapter> | --from <chapter>) [-o outputDir] [--with-volume] [-p provider]` (Providers: `composite` (default), `mangalivre`, `taosect`, `taverna`)
+- **Rename:** `rename <mangaId> [-o outputDir] [-p provider]` (Retroactively adds volume info to filenames)
 - **Check:** `check [-o outputDir] [-d]` (Verifies database entries against local files; `-d`/`--delete-missing` deletes entries without prompt)
 
 ## Docker Support
@@ -57,7 +57,7 @@ The project includes a `Dockerfile` and `docker-compose.yml` for isolated execut
         - `download/`: Adapters for downloading images.
         - `conversion/`: Logic for CBZ creation and ComicInfo.xml metadata generation.
         - `persistence/`: SQLite repository implementation.
-        - `metadata/`: Metadata fetching (Composite, MangaDex, MangaLivre, Taosect).
+        - `metadata/`: Metadata fetching (Composite, MangaDex, MangaLivre, Taosect, Taverna).
         - `http/`: Resilient HTTP client with retry and rate-limiting support.
     - **`cli/`**: Picocli command definitions and application entry point.
 
