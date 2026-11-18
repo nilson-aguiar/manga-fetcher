@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.5.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.4.0...v1.5.0) (2026-11-18)
+
+
+### Features
+
+* add Taverna de Quadrinhos provider and MediaFire archive downlo… ([6a2335d](https://github.com/nilson-aguiar/manga-fetcher/commit/6a2335d3485cbf3298dd029648a03a4e48e2bcef))
+* add Taverna de Quadrinhos provider and MediaFire archive downloader ([43c0f97](https://github.com/nilson-aguiar/manga-fetcher/commit/43c0f97dc9363cfba212b18c2e2509e1054672c3))
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([410f814](https://github.com/nilson-aguiar/manga-fetcher/commit/410f814fc0c7a53bcf88f4007b9bb81595825c13))
+* **deps:** update all non-major dependencies ([8f39848](https://github.com/nilson-aguiar/manga-fetcher/commit/8f398486795edde12bf052326ea0675794fc0372))
+* **deps:** update dependency net.sf.sevenzipjbinding:sevenzipjbinding to v26 ([a13df54](https://github.com/nilson-aguiar/manga-fetcher/commit/a13df54ebd5e0aabda9acca6e1dc6a714e4d9902))
+* **deps:** update dependency net.sf.sevenzipjbinding:sevenzipjbinding to v26 ([c48ee4a](https://github.com/nilson-aguiar/manga-fetcher/commit/c48ee4a9d58c516c9fa4d8d836406bfe1136f6f0))
+* **deps:** update dependency net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms to v26 ([206d1b4](https://github.com/nilson-aguiar/manga-fetcher/commit/206d1b40196bed51c25e99ef5c7831f41b085b89))
+* **deps:** update dependency net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms to v26 ([43320e9](https://github.com/nilson-aguiar/manga-fetcher/commit/43320e9c970f1d3a165e64f2740e88d47f14e35c))
+
 ## [1.4.0](https://github.com/nilson-aguiar/manga-fetcher/compare/v1.3.3...v1.4.0) (2026-09-20)
 
 
