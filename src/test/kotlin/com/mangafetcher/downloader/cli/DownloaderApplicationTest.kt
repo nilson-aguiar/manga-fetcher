@@ -106,7 +106,7 @@ class DownloaderApplicationTest {
         cmd.execute("download", "--help")
         val help = sw.toString().replace("\n", " ").replace(Regex("\\s+"), " ")
 
-        val providers = listOf("composite", "mangalivre", "taosect")
+        val providers = listOf("composite", "mangalivre", "taosect", "taverna")
         providers.forEach { provider ->
             assertTrue(help.contains(provider), "Should mention provider: $provider")
         }
@@ -152,7 +152,24 @@ class DownloaderApplicationTest {
         cmd.execute("search", "--help")
         val help = sw.toString().replace("\n", " ").replace(Regex("\\s+"), " ")
 
-        val providers = listOf("mangalivre", "taosect")
+        val providers = listOf("mangalivre", "taosect", "taverna")
+        providers.forEach { provider ->
+            assertTrue(help.contains(provider), "Should mention provider: $provider")
+        }
+    }
+
+    @Test
+    fun `rename command should list all available providers in help`() {
+        val app = DownloaderApplication()
+        val cmd = CommandLine(app)
+        val sw = StringWriter()
+        cmd.out = PrintWriter(sw)
+        cmd.err = PrintWriter(sw)
+
+        cmd.execute("rename", "--help")
+        val help = sw.toString().replace("\n", " ").replace(Regex("\\s+"), " ")
+
+        val providers = listOf("mangalivre", "taosect", "taverna")
         providers.forEach { provider ->
             assertTrue(help.contains(provider), "Should mention provider: $provider")
         }

@@ -13,10 +13,12 @@ import com.mangafetcher.downloader.infrastructure.conversion.ComicInfoGenerator
 import com.mangafetcher.downloader.infrastructure.download.CompositeDownloadProvider
 import com.mangafetcher.downloader.infrastructure.download.MangaLivreDownloadProvider
 import com.mangafetcher.downloader.infrastructure.download.TaosectDownloadProvider
+import com.mangafetcher.downloader.infrastructure.download.TavernaDownloadProvider
 import com.mangafetcher.downloader.infrastructure.metadata.CompositeMetadataProvider
 import com.mangafetcher.downloader.infrastructure.metadata.MangaDexMetadataProvider
 import com.mangafetcher.downloader.infrastructure.metadata.MangaLivreMetadataProvider
 import com.mangafetcher.downloader.infrastructure.metadata.TaosectMetadataProvider
+import com.mangafetcher.downloader.infrastructure.metadata.TavernaMetadataProvider
 import com.mangafetcher.downloader.infrastructure.persistence.SqliteDownloadRepository
 import com.mangafetcher.downloader.infrastructure.scraper.MangaDetails
 import com.mangafetcher.downloader.infrastructure.scraper.MangaLivreScraper
@@ -32,6 +34,7 @@ class MangaDownloadService(
             listOf(
                 MangaLivreDownloadProvider(playwrightClient = sharedPlaywrightClient),
                 TaosectDownloadProvider(sharedPlaywrightClient = sharedPlaywrightClient),
+                TavernaDownloadProvider(sharedPlaywrightClient = sharedPlaywrightClient),
             ),
         ),
     private val converter: FileConverterPort = CbzConverter(),
@@ -41,6 +44,7 @@ class MangaDownloadService(
                 MangaDexMetadataProvider(),
                 MangaLivreMetadataProvider(MangaLivreScraper(playwrightClient = sharedPlaywrightClient)),
                 TaosectMetadataProvider(sharedPlaywrightClient = sharedPlaywrightClient),
+                TavernaMetadataProvider(sharedPlaywrightClient = sharedPlaywrightClient),
             ),
         ),
 ) : AutoCloseable {
