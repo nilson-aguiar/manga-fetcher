@@ -1,5 +1,7 @@
 # Manga Fetcher CLI
 
+[![Views](https://hits.sh/github.com/nilson-aguiar/manga-fetcher.svg?view=today-total&label=Views)](https://hits.sh/github.com/nilson-aguiar/manga-fetcher/)
+
 A command-line tool for searching and downloading manga chapters, converting them into optimized `.cbz` (Comic Book ZIP) archives with embedded `ComicInfo.xml` metadata—tailor-made for self-hosted readers like **Komga** and **Kavita**, or mobile/tablet comic viewers.
 
 ---
