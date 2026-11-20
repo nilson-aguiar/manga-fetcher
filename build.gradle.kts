@@ -31,7 +31,7 @@ dependencies {
     implementation("info.picocli:picocli:4.7.7")
     kapt("info.picocli:picocli-codegen:4.7.7")
     implementation("com.squareup.okhttp3:okhttp:5.5.1")
-    implementation("com.microsoft.playwright:playwright:1.65.0")
+    implementation("com.microsoft.playwright:playwright:1.65.1")
     implementation("org.jsoup:jsoup:1.24.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
